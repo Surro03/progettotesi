@@ -8,6 +8,7 @@ public class ProgettoTesiApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(ProgettoTesiApplication.class, args);
+        System.out.println("Progetto finito");
     }
 
 }
