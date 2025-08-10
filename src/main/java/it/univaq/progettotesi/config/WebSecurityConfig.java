@@ -4,7 +4,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.stereotype.Service;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -18,9 +23,24 @@ public class WebSecurityConfig {
                 .requestMatchers("/login").permitAll()  //Endpoint che non richiedono il login
                 .anyRequest().authenticated()) //Tutti gli altri richiedono identificazione
                 .formLogin(form -> form
-                        .loginPage("/login")        // Reindirizzamento alla pagina login
-                        .permitAll())
-                .logout(withDefaults());
+                        .loginPage("/login")
+                        .loginProcessingUrl("/authenticate") // URL che Spring usa per il POST
+                        .usernameParameter("email")
+                        .passwordParameter("password")
+                        .defaultSuccessUrl("/home", true)    // redirect dopo login
+                        .failureUrl("/login?error=true")     // redirect in caso di errore
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout=true")
+                );
         return http.build();
     }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance();
+    }
+
+
 }
