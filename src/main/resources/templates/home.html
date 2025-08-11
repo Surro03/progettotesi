@@ -7,7 +7,7 @@
 <body>
 <p>
     <span th:text="#{msg.welcome}"></span>
-    <span th:text="${user.getEmail()}"></span>!
+    <span th:text="${user.getName()}"></span> <span th:text = "${user.getSurname()}"></span>!
 </p>
 <form th:action="@{/logout}" method="post">
     <input type="submit" value="Logout"/>

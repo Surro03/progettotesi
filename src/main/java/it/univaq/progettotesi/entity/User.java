@@ -1,20 +1,29 @@
 package it.univaq.progettotesi.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
+@Getter
 @Entity
 public class User implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
+    // Getter e Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private String surname;
 
     @Column(nullable = false, unique = true, length = 100)
     private String email;
@@ -25,25 +34,25 @@ public class User implements Serializable {
     @Column(nullable = false)
     private String role;
 
+
+
     public User() {
         // no-args constructor richiesto da JPA
     }
 
-    public User(String email, String password, String role) {
+    public User(String name, String surname, String email, String password, String role) {
+        this.name = name;
+        this.surname = surname;
         this.email = email;
         this.password = password;
         this.role = role;
     }
 
-    // Getter e Setter
-    public Long getId() { return this.id; }
-    public String getEmail() { return this.email; }
-    public String getRole() { return this.role; }
-    public String getPassword() { return this.password; }
-
     public void setEmail(String email) { this.email = email; }
     public void setPassword(String password) { this.password = password; }
     public void setRole(String role) { this.role = role; }
+    public void setName(String name) { this.name = name; }
+    public void setSurname(String surname) { this.surname = surname; }
 
     @Override
     public boolean equals(Object o) {

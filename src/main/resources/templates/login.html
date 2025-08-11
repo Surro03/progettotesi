@@ -12,6 +12,9 @@
 <div th:if="${param.logout}">
     Logout eseguito con successo. <br>
 </div>
+<div th:if="${param.register}">
+    Registrazione avvenuta con successo. <br>
+</div>
 <form th:action="@{/authenticate}" th:object="${user}" method="post">
     <div>
         <label>Email</label>
@@ -25,5 +28,12 @@
         <button type="submit">Accedi</button>
     </div>
 </form>
+<div>
+    Non sei registrato?
+    <button type="button"
+            th:onclick="|window.location.href='@{/register}'|">
+        Registrati
+    </button>
+</div>
 </body>
 </html>

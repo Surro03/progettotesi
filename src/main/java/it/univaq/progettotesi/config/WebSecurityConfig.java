@@ -21,7 +21,7 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/login").permitAll()  //Endpoint che non richiedono il login
+                .requestMatchers("/login", "/register").permitAll()  //Endpoint che non richiedono il login
                 .anyRequest().authenticated()) //Tutti gli altri richiedono identificazione
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -36,6 +36,12 @@ public class WebSecurityConfig {
                         .permitAll()
                 );
         return http.build();
+    }
+
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return org.springframework.security.crypto.factory.PasswordEncoderFactories
+                .createDelegatingPasswordEncoder();
     }
 
 
