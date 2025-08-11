@@ -9,5 +9,8 @@
     <span th:text="#{msg.welcome}"></span>
     <span th:text="${user.getEmail()}"></span>!
 </p>
+<form th:action="@{/logout}" method="post">
+    <input type="submit" value="Logout"/>
+</form>
 </body>
 </html>

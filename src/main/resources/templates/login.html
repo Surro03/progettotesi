@@ -6,6 +6,12 @@
 </head>
 <body>
 <h2>Effettua il Login</h2>
+<div th:if="${param.error}">
+    Username o password errati.<br>
+</div>
+<div th:if="${param.logout}">
+    Logout eseguito con successo. <br>
+</div>
 <form th:action="@{/authenticate}" th:object="${user}" method="post">
     <div>
         <label>Email</label>

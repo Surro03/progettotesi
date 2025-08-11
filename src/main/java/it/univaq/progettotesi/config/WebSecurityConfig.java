@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -31,15 +32,10 @@ public class WebSecurityConfig {
                         .failureUrl("/login?error=true")     // redirect in caso di errore
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout=true")
+                        .permitAll()
                 );
         return http.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance();
     }
 
 
