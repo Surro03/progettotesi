@@ -2,42 +2,46 @@ package it.univaq.progettotesi.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.Objects;
 
-@Getter
 @Entity
-public class User implements Serializable {
+@Table(name = "users")
+public class User {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
-
-    // Getter e Setter
     @Id
+    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter
+    @Setter
     @Column(nullable = false)
     private String name;
 
+    @Getter
+    @Setter
     @Column(nullable = false)
     private String surname;
 
+    @Getter
+    @Setter
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
+    @Getter
+    @Setter
     @Column(nullable = false)
     private String password;
 
+    @Getter
+    @Setter
     @Column(nullable = false)
     private String role;
 
-
-
     public User() {
-        // no-args constructor richiesto da JPA
+        // costruttore vuoto richiesto da JPA
     }
 
     public User(String name, String surname, String email, String password, String role) {
@@ -48,31 +52,26 @@ public class User implements Serializable {
         this.role = role;
     }
 
-    public void setEmail(String email) { this.email = email; }
-    public void setPassword(String password) { this.password = password; }
-    public void setRole(String role) { this.role = role; }
-    public void setName(String name) { this.name = name; }
-    public void setSurname(String surname) { this.surname = surname; }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof User user)) return false;
-        return Objects.equals(this.id, user.id) &&
-                Objects.equals(this.email, user.email);
+        return Objects.equals(id, user.id) &&
+                Objects.equals(email, user.email);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.id, this.email);
+        return Objects.hash(id, email);
     }
 
     @Override
     public String toString() {
         return "User{" +
-                "id=" + this.id +
-                ", email='" + this.email + '\'' +
-                ", role='" + this.role + '\'' +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", role='" + role + '\'' +
                 '}';
     }
 }
