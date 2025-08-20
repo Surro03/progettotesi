@@ -49,21 +49,21 @@ public class Building {
         if (this == o) return true;
         if (!(o instanceof Building)) return false;
 
-        return id != null && id.equals(((Building) o).id);
+        return this.id != null && this.id.equals(((Building) o).id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user.getId());
+        return Objects.hash(this.id, this.user.getId());
     }
 
     @Override
     public String toString() {
         return "Building{" +
-                    id + ", "
-                    + user.getId() + ", "
-                    + name + ", "
-                    + address + '}';
+                "id=" + this.id +
+                ", user= " + this.user +
+                ", name= " + this.name +
+                ", address= "+ this.address + '}';
     }
 
 

@@ -1,0 +1,55 @@
+<!-- templates/buildings/list.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>My Buildings</title>
+</head>
+<body>
+
+<h1>I tuoi edifici</h1>
+
+<!-- Caso lista vuota -->
+<div th:if="${#lists.isEmpty(buildings)}">
+    <p>Non hai ancora edifici.</p>
+    <a th:href="@{/buildings/new}">Crea un nuovo edificio</a>
+</div>
+
+<div th:if="${deleted}">
+    <p>Edificio eliminato con successo.</p>
+</div>
+
+<!-- Caso lista con elementi -->
+<div th:unless="${#lists.isEmpty(buildings)}">
+    <table>
+        <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Indirizzo</th>
+            <!--<th>IFC GlobalId</th>-->
+            <th>Azioni</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="b : ${buildings}">
+            <td th:text="${b.name}">Nome</td>
+            <td th:text="${b.address}">Indirizzo</td>
+            <!--<td th:text="${b.ifcGlobalId}">IFC</td>-->
+            <td>
+                <p><a th:href="@{|/buildings/${b.id}/edit|}">Modifica</a></p>
+                <p><a th:href="@{|/buildings/${b.id}|}">Visualizza dettagli (es. asset presenti)</a></p>
+                <form th:action="@{|/buildings/${b.id}/delete|}" method="post" style="display:inline">
+
+                    <button type="submit" onclick="return confirm('Eliminare questo edificio?');">
+                        Elimina
+                    </button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <p><a th:href="@{/buildings/new}">Aggiungi un altro edificio</a></p>
+</div>
+
+</body>
+</html>

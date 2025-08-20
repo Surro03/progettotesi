@@ -1,36 +1,77 @@
 package it.univaq.progettotesi.controller;
 
+import it.univaq.progettotesi.entity.Building;
 import it.univaq.progettotesi.entity.User;
-import it.univaq.progettotesi.repository.BuildingRepository;
-import it.univaq.progettotesi.repository.UserRepository;
+import it.univaq.progettotesi.forms.BuildingForm;
+import it.univaq.progettotesi.service.BuildingService;
+import it.univaq.progettotesi.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/buildings")
 public class BuildingController {
 
-    private final BuildingRepository buildingRepository;
-    private final UserRepository userRepository;
+    private final BuildingService buildingService;
+    private final UserService userService;
 
-    public BuildingController(BuildingRepository buildingRepository, UserRepository userRepository) {
-        this.buildingRepository = buildingRepository;
-        this.userRepository = userRepository;
+    public BuildingController(BuildingService buildingService, UserService userService) {
+        this.buildingService = buildingService;
+        this.userService = userService;
     }
 
     @GetMapping
     public String list(Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
-        var u = userRepository.findByEmail(user.getUsername()).orElseThrow();
-        var b = buildingRepository.findByUser_Id(u.getId());
+        var u = userService.findByEmail(user.getUsername()).orElseThrow();
+        var b = buildingService.findByUserId(u.getId());
         model.addAttribute("buildings", b);
         return "buildings/list"; // templates/buildings/list.html
     }
 
     @GetMapping("/new")
-    public String newBuilding(Model model) {
+    public String buildingForm(Model model){
+        model.addAttribute("buildingForm", new BuildingForm("", ""));
         return "buildings/new";
     }
+
+    @PostMapping("/new")
+    public String newBuilding(@Valid BuildingForm form, BindingResult bindingResult, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user, Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("formError", bindingResult.getFieldError().getDefaultMessage());
+            return "buildings/new";
+        }
+        var u = userService.findByEmail(user.getUsername()).orElseThrow();
+        Building building = buildingService.create(u, form.name(), form.address());
+        return "redirect:/buildings/" + building.getId();
+    }
+
+    @GetMapping("/{buildingId}")
+    public String buildingDetails(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+        var u = userService.findByEmail(user.getUsername()).orElseThrow();
+        Building building = buildingService.findById(buildingId).orElseThrow();
+        if(buildingService.findById(buildingId).isEmpty()) {
+            model.addAttribute("searchError", "L'edifico con id: " + buildingId + " non esiste");
+            return "redirect:/buildings/";
+        }
+        if(!u.getId().equals(building.getUser().getId())){
+            model.addAttribute("permissionError", "Non sei il proprietario di questo edificio");
+            return "redirect:/buildings/";
+        }
+        model.addAttribute("building", building);
+        return "buildings/details";
+    }
+
+    @PostMapping("/{buildingId}/delete")
+    public String deleteBuilding(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+        var u = userService.findByEmail(user.getUsername()).orElseThrow();
+        buildingService.delete(buildingId);
+        model.addAttribute("deleted", true);
+        return "redirect:/buildings";
+    }
+
+
 }

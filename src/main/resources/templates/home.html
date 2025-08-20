@@ -2,13 +2,18 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Test</title>
+    <title>Home</title>
 </head>
 <body>
 <p>
     <span th:text="#{msg.welcome}"></span>
     <span th:text="${user.getName()}"></span> <span th:text = "${user.getSurname()}"></span>!
 </p>
+<div>
+    <p>
+        <a th:href="@{/buildings}">I miei edifici</a>
+    </p>
+</div>
 <form th:action="@{/logout}" method="post">
     <input type="submit" value="Logout"/>
 </form>
