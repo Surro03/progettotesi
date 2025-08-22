@@ -13,6 +13,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import java.util.List;
 
 @Controller
+@RequestMapping("/user/")
 public class UserController {
 
     private final UserService service;
@@ -23,7 +24,7 @@ public class UserController {
         this.buildingService = buildingService;
     }
 
-    @GetMapping("/user/details")
+    @GetMapping("/details")
     public String userDetails(Model model,  @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
         var u = service.findByEmail(user.getUsername()).orElse(null);
         model.addAttribute("user", u);

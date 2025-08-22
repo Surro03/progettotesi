@@ -1,10 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Building Details</title>
+    <meta charset="UTF-8" />
+    <title>Dettagli edificio</title>
 </head>
 <body>
+
+<h1>Dettagli edificio</h1>
+
+<section>
+    <p><strong>ID:</strong> <span th:text="${building.id}">1</span></p>
+    <p><strong>Nome:</strong> <span th:text="${building.name}">Edificio A</span></p>
+    <p><strong>Indirizzo:</strong> <span th:text="${building.address}">Via Roma 1</span></p>
+    <p><strong>ID Utente proprietario:</strong> <span th:text="${building.user.id}">42</span></p>
+</section>
+
+<hr/>
+
+<section>
+    <h2>Asset dell'edificio</h2>
+
+    <!-- Messaggio se la lista è vuota -->
+    <p th:if="${#lists.isEmpty(assets)}">Nessun asset associato a questo edificio.</p>
+    <!-- Tabella asset se presenti -->
+    <div th:unless="${#lists.isEmpty(assets)}">
+        <p><strong>Totale:</strong> <span th:text="${assets.size()}">0</span></p>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Marca</th>
+                <th>Tipo</th>
+                <th>Modello</th>
+                <th>Protocollo</th>
+                <th>Endpoint</th>
+                <th>ID Utente</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="a : ${assets}">
+                <td th:text="${a.id}">10</td>
+                <td th:text="${a.name}">Inverter 1</td>
+                <td th:text="${a.brand}">BrandX</td>
+                <td th:text="${a.type}">INVERTER</td>
+                <td th:text="${a.model}">X1000</td>
+                <td th:text="${a.commProtocol}">MODBUS</td>
+                <td th:text="${a.endpoint}">192.168.1.10:502</td>
+                <td th:text="${a.user.id}">42</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <a th:href="@{/assets/new}">
+        <button type="button">Aggiungi asset</button>
+    </a>
+</section>
+
+<hr />
+
+<p>
+    <a href="/buildings">← Torna all'elenco edifici</a>
+</p>
 
 </body>
 </html>

@@ -56,6 +56,20 @@ public class Asset {
     @Setter
     private String endpoint;
 
+    public Asset() {
+        //vuoto per JPA
+    }
+
+    public Asset(User user, Building building, String name, String brand, String type, String model, String commProtocol, String endpoint) {
+        this.user = user;
+        this.building = building;
+        this.name = name;
+        this.brand = brand;
+        this.type = type;
+        this.model = model;
+        this.commProtocol = commProtocol;
+        this.endpoint = endpoint;
+    }
 
 
 
