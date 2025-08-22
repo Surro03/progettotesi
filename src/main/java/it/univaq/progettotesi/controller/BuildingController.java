@@ -1,8 +1,6 @@
 package it.univaq.progettotesi.controller;
 
-import it.univaq.progettotesi.entity.Asset;
-import it.univaq.progettotesi.entity.Building;
-import it.univaq.progettotesi.entity.User;
+import it.univaq.progettotesi.entity.*;
 import it.univaq.progettotesi.forms.AssetForm;
 import it.univaq.progettotesi.forms.BuildingForm;
 import it.univaq.progettotesi.service.AssetService;
@@ -95,9 +93,22 @@ public class BuildingController {
     }
 
     @GetMapping("/{buildingId}/assets/new")
-    public String addAsset(Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
-        model.addAttribute("assetForm", new AssetForm("", ""));
+    public String assetForm(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+        model.addAttribute("assetForm", new AssetForm("","", AssetType.INVERTER,"", CommProtocol.MODBUS));
+        model.addAttribute("buildingId", buildingId );
         return "assets/new";
+    }
+
+    @PostMapping("/{buildingId}/assets/new")
+    public String addAsset(@PathVariable Long buildingId, Model model, @Valid AssetForm assetForm, BindingResult bindingResult, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+        if(bindingResult.hasErrors()){
+            model.addAttribute("formError", bindingResult.getFieldError().getDefaultMessage());
+            return "assets/new";
+        }
+        var u =  userService.findByEmail(user.getUsername()).orElseThrow();
+        var b = buildingService.findById(buildingId).orElseThrow();
+        assetService.create( u, b, assetForm.name(), assetForm.brand(), assetForm.type(), assetForm.model(), assetForm.commProtocol(), "");
+        return "redirect:/buildings/"  + buildingId;
     }
 
     @PostMapping("/{buildingId}/delete")

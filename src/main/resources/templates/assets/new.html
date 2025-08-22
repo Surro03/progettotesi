@@ -1,10 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Aggiungi Asset</title>
 </head>
 <body>
+
+<form th:action="@{/buildings/{buildingId}/assets/new(buildingId=${buildingId})}"
+      th:object="${assetForm}" method="post">
+
+    <table>
+        <tr>
+            <td><label for="name">Nome:</label></td>
+            <td><input id="name" type="text" th:field="*{name}" placeholder="Nome asset" required autofocus /></td>
+            <td th:errors="*{name}">Name Error</td>
+        </tr>
+
+        <tr>
+            <td><label for="brand">Brand:</label></td>
+            <td><input id="brand" type="text" th:field="*{brand}" placeholder="Marca dell'asset" required /></td>
+            <td th:errors="*{brand}">Brand Error</td>
+        </tr>
+
+        <tr>
+            <td><label for="type">Tipo:</label></td>
+            <td>
+                <select id="type" th:field="*{type}" required>
+                    <option value="" disabled selected>-- seleziona --</option>
+                    <option th:each="t : ${T(it.univaq.progettotesi.entity.AssetType).values()}"
+                            th:value="${t}" th:text="${t}"></option>
+                </select>
+            </td>
+            <td th:errors="*{type}">Type Error</td>
+        </tr>
+
+        <tr>
+            <td><label for="model">Modello:</label></td>
+            <td><input id="model" type="text" th:field="*{model}" placeholder="Modello dell'asset" required /></td>
+            <td th:errors="*{model}">Model Error</td>
+        </tr>
+
+        <tr>
+            <td><label for="commProtocol">Protocollo di comunicazione:</label></td>
+            <td>
+                <select id="commProtocol" th:field="*{commProtocol}" required>
+                    <option value="" disabled selected>-- seleziona --</option>
+                    <option th:each="p : ${T(it.univaq.progettotesi.entity.CommProtocol).values()}"
+                            th:value="${p}" th:text="${p}"></option>
+                </select>
+            </td>
+            <td th:errors="*{commProtocol}">CommProtocol Error</td>
+        </tr>
+
+        <tr>
+            <td>
+                <button type="submit">Registra Asset</button>
+            </td>
+            <td>
+                <a th:href="@{'/buildings/' + ${buildingId}}">Annulla</a>
+            </td>
+        </tr>
+    </table>
+</form>
 
 </body>
 </html>

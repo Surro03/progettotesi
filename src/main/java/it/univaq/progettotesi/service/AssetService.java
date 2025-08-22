@@ -1,8 +1,6 @@
 package it.univaq.progettotesi.service;
 
-import it.univaq.progettotesi.entity.Asset;
-import it.univaq.progettotesi.entity.Building;
-import it.univaq.progettotesi.entity.User;
+import it.univaq.progettotesi.entity.*;
 import it.univaq.progettotesi.repository.AssetRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,7 +30,7 @@ public class AssetService {
     public Optional<Asset> findById(Long id) {
         return AssetRepository.findById(id);
     }
-    public Asset create(User user, Building building, String name, String brand, String type, String model, String commProtocol, String endpoint) {
+    public Asset create(User user, Building building, String name, String brand, AssetType type, String model, CommProtocol commProtocol, String endpoint) {
         Asset b = new Asset(user, building, name, brand, type, model, commProtocol, endpoint);
         return AssetRepository.save(b);
     }
@@ -41,7 +39,7 @@ public class AssetService {
         return AssetRepository.save(asset);
     }
 
-    public Asset update(Long id,  Building building, String name, String brand, String type, String model, String commProtocol, String endpoint) {
+    public Asset update(Long id,  Building building, String name, String brand, AssetType type, String model, CommProtocol commProtocol, String endpoint) {
         Asset a = AssetRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Asset non trovato: " + id));
         a.setBuilding(building);

@@ -52,9 +52,10 @@
             </tbody>
         </table>
     </div>
-    <a th:href="@{/assets/new}">
-        <button type="button">Aggiungi asset</button>
-    </a>
+    <button type="button"
+            th:onclick="|location.href='@{/buildings/{buildingId}/assets/new(buildingId=${building.id})}'|">
+        Aggiungi asset
+    </button>
 </section>
 
 <hr />

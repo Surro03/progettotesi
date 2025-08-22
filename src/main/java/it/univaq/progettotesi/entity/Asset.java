@@ -39,7 +39,7 @@ public class Asset {
     @Column(nullable=false)
     @Getter
     @Setter
-    private String type;  //e.g. INVERTER, EVSE...
+    private AssetType type;  //e.g. INVERTER, EVSE...
 
     @Column(nullable=false)
     @Getter
@@ -49,9 +49,9 @@ public class Asset {
     @Column(nullable=false)
     @Getter
     @Setter
-    private String commProtocol; //e.g. MODBUS...
+    private CommProtocol commProtocol; //e.g. MODBUS...
 
-    @Column(nullable=false)
+    @Column
     @Getter
     @Setter
     private String endpoint;
@@ -60,7 +60,7 @@ public class Asset {
         //vuoto per JPA
     }
 
-    public Asset(User user, Building building, String name, String brand, String type, String model, String commProtocol, String endpoint) {
+    public Asset(User user, Building building, String name, String brand, AssetType type, String model, CommProtocol commProtocol, String endpoint) {
         this.user = user;
         this.building = building;
         this.name = name;
