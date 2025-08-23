@@ -37,6 +37,7 @@ public class Asset {
     private String brand;
 
     @Column(nullable=false)
+    @Enumerated(EnumType.STRING)
     @Getter
     @Setter
     private AssetType type;  //e.g. INVERTER, EVSE...
@@ -47,6 +48,7 @@ public class Asset {
     private String model;
 
     @Column(nullable=false)
+    @Enumerated(EnumType.STRING)
     @Getter
     @Setter
     private CommProtocol commProtocol; //e.g. MODBUS...

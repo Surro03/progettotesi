@@ -30,6 +30,11 @@ public class AssetService {
     public Optional<Asset> findById(Long id) {
         return AssetRepository.findById(id);
     }
+
+    public Optional<Asset> findByBuildingIdAndAssetId(Long buildingId, Long assetId) {
+        return AssetRepository.findByBuilding_IdAndId(buildingId, assetId);
+    }
+
     public Asset create(User user, Building building, String name, String brand, AssetType type, String model, CommProtocol commProtocol, String endpoint) {
         Asset b = new Asset(user, building, name, brand, type, model, commProtocol, endpoint);
         return AssetRepository.save(b);

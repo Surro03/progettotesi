@@ -72,7 +72,16 @@ public class BuildingController {
         return "buildings/details";
     }
 
-    @PostMapping("/{buildingId}")
+    @GetMapping("/{buildingId}/edit")
+    public String editBuilding(@PathVariable Long buildingId, Model model) {
+        Building building = buildingService.findById(buildingId).orElseThrow();
+        model.addAttribute("building", building);
+        model.addAttribute("buildingForm", new BuildingForm("",""));
+        model.addAttribute("edit", true);
+        return "buildings/new";
+    }
+
+    @PostMapping("/{buildingId}/edit")
     public String editBuilding(@PathVariable Long buildingId, BuildingForm buildingForm, Model model, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("formError", bindingResult.getFieldError().getDefaultMessage());
@@ -83,8 +92,16 @@ public class BuildingController {
         return "redirect:/buildings/"  + building.getId();
     }
 
-    @GetMapping("/{buildingId}/assets")
-    public String buidingAssets(@PathVariable Long buildingId, Model model){
+    @PostMapping("/{buildingId}/delete")
+    public String deleteBuilding(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+        var u = userService.findByEmail(user.getUsername()).orElseThrow();
+        buildingService.delete(buildingId);
+        model.addAttribute("deleted", true);
+        return "redirect:/buildings";
+    }
+
+    @GetMapping("/{buildingId}/assets") //per ora lascio in sospeso perché mostriamo gli asset già nella vista dettagliata dell'edificio
+    public String buildingAssets(@PathVariable Long buildingId, Model model){
         Building building = buildingService.findById(buildingId).orElseThrow();
         List<Asset> assets = assetService.findByBuildingId(buildingId);
         model.addAttribute("building", building);
@@ -111,21 +128,34 @@ public class BuildingController {
         return "redirect:/buildings/"  + buildingId;
     }
 
-    @PostMapping("/{buildingId}/delete")
-    public String deleteBuilding(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
-        var u = userService.findByEmail(user.getUsername()).orElseThrow();
-        buildingService.delete(buildingId);
-        model.addAttribute("deleted", true);
-        return "redirect:/buildings";
+    @GetMapping("/{buildingId}/assets/{assetId}/edit")
+    public String assetFormEdit(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user, @PathVariable String assetId) {
+        model.addAttribute("assetForm", new AssetForm("","", AssetType.INVERTER,"", CommProtocol.MODBUS));
+        model.addAttribute("buildingId", buildingId );
+        model.addAttribute("assetId", assetId );
+        model.addAttribute("edit", true);
+        return "assets/new";
     }
 
-    @GetMapping("/{buildingId}/edit")
-    public String editBuilding(@PathVariable Long buildingId, Model model) {
-        Building building = buildingService.findById(buildingId).orElseThrow();
-        model.addAttribute("building", building);
-        model.addAttribute("buildingForm", new BuildingForm("",""));
-        return "buildings/edit";
+    @PostMapping("/{buildingId}/assets/{assetId}/edit")
+    public String editAsset(@PathVariable Long buildingId, @PathVariable Long assetId, @Valid AssetForm assetForm, BindingResult bindingResult, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+        if(bindingResult.hasErrors()){
+            model.addAttribute("formError", bindingResult.getFieldError().getDefaultMessage());
+            return "assets/new";
+        }
+        var b = buildingService.findById(buildingId).orElseThrow();
+        assetService.update(assetId, b, assetForm.name(), assetForm.brand(), assetForm.type(), assetForm.model(), assetForm.commProtocol(), "");
+        model.addAttribute("updated", true);
+        return "redirect:/buildings/"  + buildingId;
     }
+
+    @PostMapping("/buildings/{buildingId}/assets/{assetId}/delete ")
+    public String deleteAsset(@PathVariable Long buildingId, @PathVariable Long assetId, Model model) {
+        assetService.delete(assetId);
+        model.addAttribute("deleted", true);
+        return "redirect:/buildings/"  + buildingId;
+    }
+
 
 
 
