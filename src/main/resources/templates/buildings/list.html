@@ -36,8 +36,8 @@
             <td th:text="${b.address}">Indirizzo</td>
             <!--<td th:text="${b.ifcGlobalId}">IFC</td>-->
             <td>
-                <p><a th:href="@{|/buildings/${b.id}/edit|}">Modifica</a></p>
-                <p><a th:href="@{|/buildings/${b.id}|}">Visualizza dettagli (es. asset presenti)</a></p>
+
+                <p><a th:href="@{|/buildings/${b.id}|}">Visualizza dettagli</a></p>
                 <form th:action="@{|/buildings/${b.id}/delete|}" method="post" style="display:inline">
 
                     <button type="submit" onclick="return confirm('Eliminare questo edificio?');">

@@ -13,6 +13,7 @@
     <p><strong>Nome:</strong> <span th:text="${building.name}">Edificio A</span></p>
     <p><strong>Indirizzo:</strong> <span th:text="${building.address}">Via Roma 1</span></p>
     <p><strong>ID Utente proprietario:</strong> <span th:text="${building.user.id}">42</span></p>
+    <p><a th:href="@{|/buildings/${buildingId}/edit|}">Modifica</a></p>
 </section>
 
 <hr/>
@@ -36,6 +37,7 @@
                 <th>Protocollo</th>
                 <th>Endpoint</th>
                 <th>ID Utente</th>
+                <th th:cellpadding="15px">Azioni</th>
             </tr>
             </thead>
             <tbody>
@@ -48,9 +50,23 @@
                 <td th:text="${a.commProtocol}">MODBUS</td>
                 <td th:text="${a.endpoint}">192.168.1.10:502</td>
                 <td th:text="${a.user.id}">42</td>
+                <td>
+                    <form th:action="@{/buildings/{buildingId}/assets/{assetId}/delete(buildingId=${building.id},assetId=${a.id})}"
+                           method="post"
+                           onsubmit="return confirm('Eliminare questo asset?');">
+                        <button type="submit">Elimina Asset</button>
+                    </form>
+                </td>
+                <td> <button type="button"
+                             th:onclick="|location.href='@{/buildings/{buildingId}/assets/{assetId}/edit(buildingId=${building.id},assetId=${a.id})}'|">
+                    Modifica Asset
+                </button></td>
             </tr>
+
             </tbody>
+
         </table>
+
     </div>
     <button type="button"
             th:onclick="|location.href='@{/buildings/{buildingId}/assets/new(buildingId=${building.id})}'|">

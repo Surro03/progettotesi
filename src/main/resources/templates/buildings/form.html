@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Register New Building</title>
+</head>
+<body>
+
+<h2 th:text="${edit}? |Modifica l'edificio ${buildingId}| : 'Registra il tuo edifico'">
+    Titolo
+</h2>
+
+
+
+    <form th:action="${edit} ? @{/buildings/{id}/edit(id=${buildingId})} : @{/buildings/new}" th:object="${buildingForm}" method="post">
+        <table>
+            <tr>
+                <td><label for="name">Nome:</label> </td>
+                <td><input id = "name" type="text" th:field="*{name}" placeholder="Nome edificio"/></td>
+                <td th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name Error</td>
+            </tr>
+            <tr>
+                <td><label for="address">Indirizzo:</label></td>
+                <td><input id="address" type="text" th:field="*{address}" placeholder="Indirizzo edificio"/></td>
+                <td th:if="${#fields.hasErrors('address')}" th:errors="*{address}">Address Error</td>
+            </tr>
+            <tr>
+
+                <td th:if="!${edit}"><button type="submit">Registra Edificio</button></td>
+                <td th:if="${edit}"><button type="submit">Modifica Edificio</button></td>
+                <td>
+                    <a th:href="@{'/buildings'}">Annulla</a>
+                </td>
+            </tr>
+
+        </table>
+
+    </form>
+
+</body>
+</html>

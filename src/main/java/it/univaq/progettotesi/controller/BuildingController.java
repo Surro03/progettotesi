@@ -40,14 +40,16 @@ public class BuildingController {
     @GetMapping("/new")
     public String buildingForm(Model model){
         model.addAttribute("buildingForm", new BuildingForm("", ""));
-        return "buildings/new";
+        model.addAttribute("edit", false);
+        return "buildings/form";
     }
 
     @PostMapping("/new")
     public String newBuilding(@Valid BuildingForm form, BindingResult bindingResult, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("formError", bindingResult.getFieldError().getDefaultMessage());
-            return "buildings/new";
+            model.addAttribute("edit", false);
+            return "buildings/form";
         }
         var u = userService.findByEmail(user.getUsername()).orElseThrow();
         Building building = buildingService.create(u, form.name(), form.address());
@@ -75,17 +77,19 @@ public class BuildingController {
     @GetMapping("/{buildingId}/edit")
     public String editBuilding(@PathVariable Long buildingId, Model model) {
         Building building = buildingService.findById(buildingId).orElseThrow();
-        model.addAttribute("building", building);
-        model.addAttribute("buildingForm", new BuildingForm("",""));
+        model.addAttribute("buildingId", building.getId());
+        model.addAttribute("buildingForm", new BuildingForm(building.getName(),building.getAddress()));
         model.addAttribute("edit", true);
-        return "buildings/new";
+        return "buildings/form";
     }
 
     @PostMapping("/{buildingId}/edit")
     public String editBuilding(@PathVariable Long buildingId, BuildingForm buildingForm, Model model, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("formError", bindingResult.getFieldError().getDefaultMessage());
-            return "buildings/edit";
+            model.addAttribute("edit", true);
+            model.addAttribute("buildingId", buildingId);
+            return "buildings/form";
         }
         Building building = buildingService.update(buildingId,  buildingForm.name(), buildingForm.address());
         model.addAttribute("updated", true);
@@ -113,14 +117,14 @@ public class BuildingController {
     public String assetForm(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
         model.addAttribute("assetForm", new AssetForm("","", AssetType.INVERTER,"", CommProtocol.MODBUS));
         model.addAttribute("buildingId", buildingId );
-        return "assets/new";
+        return "assets/form";
     }
 
     @PostMapping("/{buildingId}/assets/new")
     public String addAsset(@PathVariable Long buildingId, Model model, @Valid AssetForm assetForm, BindingResult bindingResult, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
         if(bindingResult.hasErrors()){
             model.addAttribute("formError", bindingResult.getFieldError().getDefaultMessage());
-            return "assets/new";
+            return "assets/form";
         }
         var u =  userService.findByEmail(user.getUsername()).orElseThrow();
         var b = buildingService.findById(buildingId).orElseThrow();
@@ -129,19 +133,23 @@ public class BuildingController {
     }
 
     @GetMapping("/{buildingId}/assets/{assetId}/edit")
-    public String assetFormEdit(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user, @PathVariable String assetId) {
-        model.addAttribute("assetForm", new AssetForm("","", AssetType.INVERTER,"", CommProtocol.MODBUS));
+    public String assetFormEdit(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user, @PathVariable Long assetId) {
+        Asset asset = assetService.findById(assetId).orElseThrow();
+        model.addAttribute("assetForm", new AssetForm(asset.getName(),asset.getBrand(), asset.getType(), asset.getModel(), asset.getCommProtocol()));
         model.addAttribute("buildingId", buildingId );
         model.addAttribute("assetId", assetId );
         model.addAttribute("edit", true);
-        return "assets/new";
+        return "assets/form";
     }
 
     @PostMapping("/{buildingId}/assets/{assetId}/edit")
     public String editAsset(@PathVariable Long buildingId, @PathVariable Long assetId, @Valid AssetForm assetForm, BindingResult bindingResult, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
         if(bindingResult.hasErrors()){
             model.addAttribute("formError", bindingResult.getFieldError().getDefaultMessage());
-            return "assets/new";
+            model.addAttribute("buildingId", buildingId );
+            model.addAttribute("assetId", assetId );
+            model.addAttribute("edit", true);
+            return "assets/form";
         }
         var b = buildingService.findById(buildingId).orElseThrow();
         assetService.update(assetId, b, assetForm.name(), assetForm.brand(), assetForm.type(), assetForm.model(), assetForm.commProtocol(), "");
@@ -149,7 +157,7 @@ public class BuildingController {
         return "redirect:/buildings/"  + buildingId;
     }
 
-    @PostMapping("/buildings/{buildingId}/assets/{assetId}/delete ")
+    @PostMapping("/{buildingId}/assets/{assetId}/delete")
     public String deleteAsset(@PathVariable Long buildingId, @PathVariable Long assetId, Model model) {
         assetService.delete(assetId);
         model.addAttribute("deleted", true);

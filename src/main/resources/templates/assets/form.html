@@ -7,7 +7,11 @@
 <body>
 
 
-<form th:action="@{/buildings/{buildingId}/assets/new(buildingId=${buildingId})}"
+<h2 th:text="${edit}? |Modifica l'asset ${assetId}| : 'Aggiungi Asset'">
+    Titolo
+</h2>
+
+<form th:action="${edit}?  @{/buildings/{buildingId}/assets/{assetId}/edit(buildingId=${buildingId},assetId=${assetId})} : @{/buildings/{buildingId}/assets/new(buildingId=${buildingId})}"
       th:object="${assetForm}" method="post">
 
     <table>
@@ -54,8 +58,11 @@
         </tr>
 
         <tr>
-            <td>
+            <td th:if="!${edit}">
                 <button type="submit">Registra Asset</button>
+            </td>
+            <td th:if="${edit}">
+                <button type="submit">Modifica Asset</button>
             </td>
             <td>
                 <a th:href="@{'/buildings/' + ${buildingId}}">Annulla</a>
