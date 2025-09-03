@@ -1,58 +1,102 @@
-<!-- templates/buildings/list.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="it">
 <head>
     <meta charset="UTF-8">
     <title>I miei edifici</title>
+    <!-- Spostato lo script dentro head -->
+    <script th:src="@{/javascript/tabnav.js}" defer></script>
 </head>
 <body>
 
 <h1>I tuoi edifici</h1>
 
-<!-- Caso lista vuota -->
-<div th:if="${#lists.isEmpty(buildings)}">
-    <p>Non hai ancora edifici.</p>
-    <a th:href="@{/buildings/new}">Crea un nuovo edificio</a>
+<!-- Stato "nessun risultato" -->
+<div th:if="${page.totalElements == 0}">
+    <p>Nessun edificio trovato.</p>
+    <p><a th:href="@{/buildings/new}">Aggiungi un edificio</a></p>
 </div>
 
-<div th:if="${deleted}">
-    <p>Edificio eliminato con successo.</p>
-</div>
-
-<!-- Caso lista con elementi -->
-<div th:unless="${#lists.isEmpty(buildings)}">
-    <table>
+<!-- Tabella -->
+<div th:if="${page.totalElements > 0}">
+    <table id="buildingTable">
         <thead>
         <tr>
-            <th>Nome</th>
-            <th>Indirizzo</th>
-            <!--<th>IFC GlobalId</th>-->
-            <th>Azioni</th>
+            <th scope="col">
+                <a th:with="isDesc=${param.sort != null and #strings.contains(param.sort,'name,desc')},
+                     nextDir=${isDesc} ? 'asc' : 'desc'"
+                   th:href="@{/buildings(page=0, size=${page.size}, sort=${'name,'+nextDir})}">
+                    Nome
+                </a>
+            </th>
+            <th scope="col">
+                <a th:with="isDesc=${param.sort != null and #strings.contains(param.sort,'address,desc')},
+                     nextDir=${isDesc} ? 'asc' : 'desc'"
+                   th:href="@{/buildings(page=0, size=${page.size}, sort=${'address,'+nextDir})}">
+                    Indirizzo
+                </a>
+            </th>
+            <th scope="col">Azioni</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="b : ${buildings}">
+        <tr th:each="b : ${buildings}" th:attr="data-default-href=@{|/buildings/${b.id}|}">
             <td th:text="${b.name}">Nome</td>
             <td th:text="${b.address}">Indirizzo</td>
-            <!--<td th:text="${b.ifcGlobalId}">IFC</td>-->
             <td>
-
-                <p><a th:href="@{|/buildings/${b.id}|}">Visualizza dettagli</a></p>
+                <a th:href="@{|/buildings/${b.id}|}">Visualizza dettagli</a>
                 <form th:action="@{|/buildings/${b.id}/delete|}" method="post" style="display:inline">
-
-                    <button type="submit" onclick="return confirm('Eliminare questo edificio?');">
-                        Elimina
-                    </button>
+                    <button type="submit" onclick="return confirm('Eliminare questo edificio?');">Elimina</button>
                 </form>
             </td>
         </tr>
         </tbody>
     </table>
-    <p><a th:href="@{/buildings/new}">Aggiungi un altro edificio</a></p>
-</div>
 
-<button type="button"
-        th:onclick="|location.href='@{/home}'|">
+    <!-- Pager compatto -->
+    <nav aria-label="Paginazione" class="pager">
+        <div class="pager-compact">
+            <!-- Precedente -->
+            <a th:if="${page.hasPrevious()}"
+               th:href="@{/buildings(page=${page.number-1}, size=${page.size}, sort=${param.sort})}">❮</a>
+            <span th:unless="${page.hasPrevious()}" class="disabled">❮</span>
+
+            <!-- Numero pagina corrente (1-based) -->
+            <span th:text="${page.number+1}">1</span>
+
+            <!-- Successiva -->
+            <a th:if="${page.hasNext()}"
+               th:href="@{/buildings(page=${page.number+1}, size=${page.size}, sort=${param.sort})}">❯</a>
+            <span th:unless="${page.hasNext()}" class="disabled">❯</span>
+        </div>
+
+        <!-- Info "mostra X–Y di Z" -->
+        <span class="pager-info">
+      Mostra
+      <strong th:text="${page.totalElements == 0 ? 0 : page.number*page.size + 1}">1</strong>–
+      <strong th:text="${ ((page.number+1)*page.size) > page.totalElements ? page.totalElements : ((page.number+1)*page.size) }">1</strong>
+      di <strong th:text="${page.totalElements}">0</strong>
+    </span>
+
+        <!-- Cambio size (preserva sort e pagina) -->
+        <form method="get" th:action="@{/buildings}" class="page-size">
+            <input type="hidden" name="page" th:value="${page.number}"/>
+            <input type="hidden" name="sort" th:value="${param.sort}"/>
+            <label>Per pagina:
+                <select name="size" onchange="this.form.submit()">
+                    <option th:each="s : ${new int[]{5,10,25,50,100}}"
+                            th:value="${s}"
+                            th:selected="${s} == ${page.size}"
+                            th:text="${s}">10</option>
+                </select>
+            </label>
+        </form>
+    </nav>
+</div>
+<button type="button" th:onclick="|location.href='@{/buildings/new}'|">
+    Nuovo Edificio
+</button>
+
+<button type="button" th:onclick="|location.href='@{/home}'|">
     Torna alla home
 </button>
 

@@ -7,6 +7,10 @@ import it.univaq.progettotesi.service.AssetService;
 import it.univaq.progettotesi.service.BuildingService;
 import it.univaq.progettotesi.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,10 +34,15 @@ public class BuildingController {
     }
 
     @GetMapping
-    public String list(Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+    public String list(Model model,
+                       @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
+                       @PageableDefault(size = 1, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
+
         var u = userService.findByEmail(user.getUsername()).orElseThrow();
-        var b = buildingService.findByUserId(u.getId());
-        model.addAttribute("buildings", b);
+        Page<Building> page = buildingService.findByUserId(u.getId(), pageable);
+
+        model.addAttribute("page", page);                 // l'oggetto Page<Building>
+        model.addAttribute("buildings", page.getContent()); // solo la lista per il <tbody>
         return "buildings/list"; // templates/buildings/list.html
     }
 

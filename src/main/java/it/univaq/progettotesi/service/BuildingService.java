@@ -3,6 +3,8 @@ package it.univaq.progettotesi.service;
 import it.univaq.progettotesi.entity.Building;
 import it.univaq.progettotesi.entity.User;
 import it.univaq.progettotesi.repository.BuildingRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,8 +28,8 @@ public class BuildingService {
         return buildingRepository.findById(id);
     }
 
-    public List<Building> findByUserId(Long id) {
-        return buildingRepository.findByUser_Id(id);
+    public Page<Building> findByUserId(Long id,  Pageable pageable) {
+        return buildingRepository.findByUser_Id(id, pageable);
     }
 
     public Building create(User user, String name, String address) {

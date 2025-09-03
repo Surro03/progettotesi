@@ -30,5 +30,12 @@ public class UserController {
         model.addAttribute("user", u);
         return "user/details";
     }
+
+    @GetMapping("/edit")
+    public String userEdit(Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+       return "user/form";
+    }
+
+
 }
 
