@@ -36,7 +36,7 @@ public class BuildingController {
     @GetMapping
     public String list(Model model,
                        @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
-                       @PageableDefault(size = 1, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
+                       @PageableDefault(size = 5, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
 
         var u = userService.findByEmail(user.getUsername()).orElseThrow();
         Page<Building> page = buildingService.findByUserId(u.getId(), pageable);

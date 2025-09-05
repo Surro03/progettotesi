@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>I miei edifici</title>
-    <!-- Spostato lo script dentro head -->
     <script th:src="@{/javascript/tabnav.js}" defer></script>
 </head>
 <body>
@@ -71,10 +70,10 @@
 
         <!-- Info "mostra X–Y di Z" -->
         <span class="pager-info">
-      Mostra
-      <strong th:text="${page.totalElements == 0 ? 0 : page.number*page.size + 1}">1</strong>–
+      Stai vedendo i risultati dall'
+      <strong th:text="${page.totalElements == 0 ? 0 : page.number*page.size + 1}">1</strong> al
       <strong th:text="${ ((page.number+1)*page.size) > page.totalElements ? page.totalElements : ((page.number+1)*page.size) }">1</strong>
-      di <strong th:text="${page.totalElements}">0</strong>
+      di totale <strong th:text="${page.totalElements}">0</strong> <span th:text="${page.totalElements} == 1  ? risultato : risultati">risultato</span>
     </span>
 
         <!-- Cambio size (preserva sort e pagina) -->
