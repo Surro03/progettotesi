@@ -4,6 +4,7 @@ import it.univaq.progettotesi.entity.*;
 import it.univaq.progettotesi.forms.AssetForm;
 import it.univaq.progettotesi.forms.BuildingForm;
 import it.univaq.progettotesi.service.AssetService;
+import it.univaq.progettotesi.service.BuildingConfigService;
 import it.univaq.progettotesi.service.BuildingService;
 import it.univaq.progettotesi.service.UserService;
 import jakarta.validation.Valid;
@@ -24,13 +25,15 @@ import java.util.List;
 public class BuildingController {
 
     private final BuildingService buildingService;
+    private final BuildingConfigService buildingConfigService;
     private final UserService userService;
     private final AssetService assetService;
 
-    public BuildingController(BuildingService buildingService, UserService userService, AssetService assetService) {
+    public BuildingController(BuildingService buildingService, UserService userService, AssetService assetService, BuildingConfigService buildingConfigService) {
         this.buildingService = buildingService;
         this.userService = userService;
         this.assetService = assetService;
+        this.buildingConfigService = buildingConfigService;
     }
 
     @GetMapping
@@ -81,6 +84,12 @@ public class BuildingController {
         model.addAttribute("building", building);
         model.addAttribute("assets", assets);
         return "buildings/details";
+    }
+
+    @GetMapping("/{buildingId}/config")
+    public String show(@PathVariable long buildingId, Model model) {
+        model.addAttribute("json", buildingConfigService.readJson(buildingId).toPrettyString());
+        return "buildings/config"; // tua view
     }
 
     @GetMapping("/{buildingId}/edit")

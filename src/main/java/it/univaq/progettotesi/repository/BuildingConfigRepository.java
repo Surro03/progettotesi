@@ -5,8 +5,11 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 
 import jakarta.persistence.LockModeType;
+import org.springframework.stereotype.Repository;
+
 import java.util.Optional;
 
+@Repository
 public interface BuildingConfigRepository extends JpaRepository<BuildingConfig, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)

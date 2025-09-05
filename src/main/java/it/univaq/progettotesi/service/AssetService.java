@@ -14,9 +14,11 @@ import java.util.Optional;
 public class AssetService {
 
     private final AssetRepository AssetRepository;
+    private final BuildingConfigService buildingConfigService;
 
-    public AssetService(AssetRepository AssetRepository) {
+    public AssetService(AssetRepository AssetRepository,  BuildingConfigService configService) {
         this.AssetRepository = AssetRepository;
+        this.buildingConfigService = configService;
     }
 
     public List<Asset> findAll() {
@@ -35,12 +37,17 @@ public class AssetService {
         return AssetRepository.findByBuilding_IdAndId(buildingId, assetId);
     }
 
-    public Asset create(User user, Building building, String name, String brand, AssetType type, String model, CommProtocol commProtocol, String endpoint) {
-        Asset b = new Asset(user, building, name, brand, type, model, commProtocol, endpoint);
-        return AssetRepository.save(b);
+    @Transactional
+    public Asset create(User user, Building building, String name, String brand,
+                        AssetType type, String model, CommProtocol commProtocol, String endpoint) {
+        Asset a = new Asset(user, building, name, brand, type, model, commProtocol, endpoint);
+        Asset saved = AssetRepository.saveAndFlush(a);
+        buildingConfigService.saveBuildingConfig(building.getId());
+        return saved;
     }
 
     public Asset save(Asset asset) {
+        buildingConfigService.saveBuildingConfig(asset.getBuilding().getId());
         return AssetRepository.save(asset);
     }
 
@@ -54,10 +61,13 @@ public class AssetService {
         a.setModel(model);
         a.setCommProtocol(commProtocol);
         a.setEndpoint(endpoint);
+        buildingConfigService.saveBuildingConfig(building.getId());
         return AssetRepository.save(a);
     }
 
     public void delete(Long id) {
+        Long buildingId = AssetRepository.findById(id).get().getBuilding().getId();
         AssetRepository.deleteById(id);
+        buildingConfigService.saveBuildingConfig(buildingId);
     }
 }

@@ -16,6 +16,11 @@
     <p><a th:href="@{|/buildings/${buildingId}/edit|}">Modifica</a></p>
 </section>
 
+<button type="button"
+        th:onclick="|location.href='@{/buildings/{buildingId}/config(buildingId=${building.id})}'|">
+    Test JSON configurazione
+</button>
+
 <hr/>
 
 <section>

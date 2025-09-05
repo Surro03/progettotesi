@@ -13,13 +13,24 @@ import java.time.Instant;
 
 @Entity
 @Table(name = "building_config")
-
-public class BuildingConfig {
+public class BuildingConfig implements org.springframework.data.domain.Persistable<Long> {
 
     @Id
     @Column(name = "building_id", nullable = false)
     @Getter
     private Long buildingId;   // PK = FK
+
+    @Transient
+    private boolean isNew = true;
+
+    @PostLoad
+    void markNotNew() { this.isNew = false; }
+
+    @Override
+    public Long getId() { return buildingId; }
+
+    @Override
+    public boolean isNew() { return isNew; }
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "building_id", foreignKey = @ForeignKey(name = "fk_building_config_building"))
@@ -54,7 +65,7 @@ public class BuildingConfig {
     @Setter
     @Getter
     @Column(name = "row_version")
-    private long rowVersion;
+    private Long rowVersion;
 
     public BuildingConfig() {
 
