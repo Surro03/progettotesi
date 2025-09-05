@@ -3,24 +3,35 @@ package it.univaq.progettotesi.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.univaq.progettotesi.repository.AssetRepository;
+import it.univaq.progettotesi.repository.BuildingConfigRepository;
 import org.springframework.stereotype.Component;
 
 @Component
 public class BuildingConfigBuilder {
 
     private final ObjectMapper om;
-    private final AssetRepository assetRepo; // <-- crea il tuo repository
+    private final AssetRepository assetRepo;
+    private final BuildingConfigRepository buildingConfigRepository;
 
-    public BuildingConfigBuilder(ObjectMapper om, AssetRepository assetRepo) {
+    public BuildingConfigBuilder(ObjectMapper om, AssetRepository assetRepo, BuildingConfigRepository buildingConfigRepository) {
         this.om = om;
         this.assetRepo = assetRepo;
+        this.buildingConfigRepository = buildingConfigRepository;
     }
 
     public ObjectNode buildPayload(long buildingId) {
-        var root = om.createObjectNode();  //è l'oggetto JSON radice, quello che poi verrà restituito
-        root.put("configVersion", 1);
-        root.put("buildingId", buildingId);
-        root.put("generatedAt", java.time.Instant.now().toString());
+        var root = om.createObjectNode();
+        if(buildingConfigRepository.findByBuildingId(buildingId).isEmpty()) {
+              //è l'oggetto JSON radice, quello che poi verrà restituito
+            root.put("configVersion", 1);
+            root.put("buildingId", buildingId);
+            root.put("generatedAt", java.time.Instant.now().toString());
+        }
+        else{//è l'oggetto JSON radice, quello che poi verrà restituito
+            root.put("configVersion", buildingConfigRepository.findByBuildingId(buildingId).get().getVersion()+1);
+            root.put("buildingId", buildingId);
+            root.put("generatedAt", java.time.Instant.now().toString());
+        }
 
         var caps = om.createObjectNode()   // sono le cose che l'edificio può fare, utile per capire quali parti di app attivare
                 .put("evCharging", false)
