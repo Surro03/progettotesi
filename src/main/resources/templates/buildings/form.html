@@ -29,9 +29,11 @@
                 <td th:if="!${edit}"><button type="submit">Registra Edificio</button></td>
                 <td th:if="${edit}"><button type="submit">Modifica Edificio</button></td>
                 <td>
-                    <a th:href="@{'/buildings'}">Annulla</a>
+                    <a th:if="${!edit}" th:href="@{/buildings}">Annulla</a>
+                    <a th:if="${edit}"  th:href="@{/buildings/{buildingId}(buildingId=${buildingId})}">Annulla</a>
                 </td>
             </tr>
+
 
         </table>
 

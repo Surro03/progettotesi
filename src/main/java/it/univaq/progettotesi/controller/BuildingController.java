@@ -69,7 +69,8 @@ public class BuildingController {
     }
 
     @GetMapping("/{buildingId}")
-    public String buildingDetails(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+    public String buildingDetails(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
+                                  @PageableDefault(size = 5, sort = "commProtocol", direction = Sort.Direction.ASC) Pageable pageable) {
         var u = userService.findByEmail(user.getUsername()).orElseThrow();
         if(buildingService.findById(buildingId).isEmpty()) {
             model.addAttribute("searchError", "L'edifico con id: " + buildingId + " non esiste");
@@ -80,15 +81,16 @@ public class BuildingController {
             model.addAttribute("permissionError", "Non sei il proprietario di questo edificio");
             return "redirect:/buildings/";
         }
-        List<Asset> assets = assetService.findByBuildingId(buildingId);
+        Page<Asset> page = assetService.findByBuildingId(buildingId, pageable);
         model.addAttribute("building", building);
-        model.addAttribute("assets", assets);
+        model.addAttribute("page", page);
+        model.addAttribute("assets", page.getContent());
         return "buildings/details";
     }
 
     @GetMapping("/{buildingId}/config")
     public String show(@PathVariable long buildingId, Model model) {
-        model.addAttribute("json", buildingConfigService.readJson(buildingId).toPrettyString());
+        model.addAttribute("json", buildingConfigService.getJson(buildingId).toPrettyString());
         return "buildings/config"; // tua view
     }
 
@@ -123,9 +125,10 @@ public class BuildingController {
     }
 
     @GetMapping("/{buildingId}/assets") //per ora lascio in sospeso perché mostriamo gli asset già nella vista dettagliata dell'edificio
-    public String buildingAssets(@PathVariable Long buildingId, Model model){
+    public String buildingAssets(@PathVariable Long buildingId, Model model,
+                                 @PageableDefault(size = 5, sort = "name", direction = Sort.Direction.ASC) Pageable pageable){
         Building building = buildingService.findById(buildingId).orElseThrow();
-        List<Asset> assets = assetService.findByBuildingId(buildingId);
+        Page<Asset> assets = assetService.findByBuildingId(buildingId, pageable);
         model.addAttribute("building", building);
         model.addAttribute("assets", assets);
         return "buildings/assets";

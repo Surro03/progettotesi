@@ -62,6 +62,6 @@ public class AuthController {
     public String home(Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
         var u = service.findByEmail(user.getUsername()).orElse(null);
         model.addAttribute("user", u);
-        return "home"; // risolve templates/home.html
+        return "home";
     }
 }

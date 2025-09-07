@@ -7,12 +7,19 @@
 <body>
 <h1>Dettagli Account</h1>
 
+<div th:if="${edit}">
+    Profilo modificato con successo
+</div>
+
 <section>
     <p><strong>Nome:</strong> <span th:text="${user.name}">1</span></p>
     <p><strong>Cognome:</strong> <span th:text="${user.surname}">Edificio A</span></p>
     <p><strong>Email:</strong> <span th:text="${user.email}">Via Roma 1</span></p>
     <p><a th:href="@{|/user/edit|}">Modifica</a></p>
 </section>
+<button type="button" th:onclick="|location.href='@{/home}'|">
+    Torna alla home
+</button>
 
 <hr/>
 

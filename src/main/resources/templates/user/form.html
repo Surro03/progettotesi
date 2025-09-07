@@ -5,6 +5,44 @@
     <title>Modfica utente</title>
 </head>
 <body>
+<form th:action="@{/user/edit}" th:object="${registerForm}" method="post">
 
+    <table>
+        <tr>
+            <td><label for="name">Nome:</label></td>
+            <td><input id="name" type="text" th:field="*{name}" autocomplete="given-name" placeholder="Inserisci il tuo nome" required autofocus/></td>
+            <td th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Errore nome</td>
+        </tr>
+
+        <tr>
+            <td><label for="surname">Cognome:</label></td>
+            <td><input id="surname" type="text" th:field="*{surname}" autocomplete="family-name" placeholder="Inserisci il tuo cognome" required/></td>
+            <td th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}">Errore cognome</td>
+        </tr>
+
+        <tr>
+            <td><label for="email">Email:</label></td>
+            <td><input id="email" type="email" th:field="*{email}" autocomplete="email" placeholder="Inserisci la tua email" required/></td>
+            <td>
+                <span th:if="${emailError}">Email già in uso</span>
+                <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Errore email</span>
+            </td>
+        </tr>
+
+        <tr>
+            <td><label for="password">Password:</label></td>
+            <td><input id="password" type="password" th:field="*{password}" autocomplete="new-password" placeholder="Inserisci la tua password" required/></td>
+            <td th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Errore password</td>
+        </tr>
+
+        <tr>
+            <td colspan="3">
+                <button type="submit">Modifica Account</button>
+            </td>
+        </tr>
+
+    </table>
+</form>
+<a th:href="@{'/user/details'}">Annulla</a>
 </body>
 </html>

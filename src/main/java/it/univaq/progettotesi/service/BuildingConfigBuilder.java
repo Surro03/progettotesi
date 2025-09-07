@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.univaq.progettotesi.repository.AssetRepository;
 import it.univaq.progettotesi.repository.BuildingConfigRepository;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,18 +22,16 @@ public class BuildingConfigBuilder {
 
     public ObjectNode buildPayload(long buildingId) {
         var root = om.createObjectNode();
+        //è l'oggetto JSON radice, quello che poi verrà restituito
         if(buildingConfigRepository.findByBuildingId(buildingId).isEmpty()) {
-              //è l'oggetto JSON radice, quello che poi verrà restituito
             root.put("configVersion", 1);
-            root.put("buildingId", buildingId);
-            root.put("generatedAt", java.time.Instant.now().toString());
         }
-        else{//è l'oggetto JSON radice, quello che poi verrà restituito
+        else{
             root.put("configVersion", buildingConfigRepository.findByBuildingId(buildingId).get().getVersion()+1);
-            root.put("buildingId", buildingId);
-            root.put("generatedAt", java.time.Instant.now().toString());
         }
 
+        root.put("buildingId", buildingId);
+        root.put("generatedAt", java.time.Instant.now().toString());
         var caps = om.createObjectNode()   // sono le cose che l'edificio può fare, utile per capire quali parti di app attivare
                 .put("evCharging", false)
                 .put("solar", false)
@@ -40,23 +39,26 @@ public class BuildingConfigBuilder {
 
         var assetsArr = om.createArrayNode();  //aggiunge l'array con gli asset
 
-        var assets = assetRepo.findByBuilding_Id(buildingId); // JOIN su asset_type
+        var page = assetRepo.findByBuilding_Id(buildingId, Pageable.unpaged()); // Page<Asset>
+        var assets = page.getContent();
         for (var a : assets) {
             var code = a.getType().name();
             assetsArr.add(om.createObjectNode()
                     .put("name", a.getName())
                     .put("type", code)
-                    .put("commProtocol",a.getCommProtocol().name()));
-                    //.put("qty", a.getQty()));
+                    .put("commProtocol", a.getCommProtocol().name()));
+            //.put("qty", a.getQty()));
             switch (a.getType()) {
-                case INVERTER    -> caps.put("solar", true);
-                case EVSE   -> caps.put("evCharging", true);
-                case WIFI       -> caps.put("wifi", true);
+                case INVERTER -> caps.put("solar", true);
+                case EVSE -> caps.put("evCharging", true);
+                case WIFI -> caps.put("wifi", true);
             }
         }
 
         var hide = om.createArrayNode();  //tutte le cose non presenti verranno aggiunte al json hide per dire all'app mobile quali parti nascondere
-        caps.properties().forEach(e -> { if (!e.getValue().asBoolean()) hide.add(e.getKey()); });
+        caps.properties().forEach(e -> {
+            if (!e.getValue().asBoolean()) hide.add(e.getKey());
+        });
 
         var ui = om.createObjectNode();
         ui.set("hideSections", hide);
@@ -68,5 +70,6 @@ public class BuildingConfigBuilder {
         root.set("uiShow", ui);
         //root.put("i18nLocale", "it-IT");
         return root;
+
     }
 }

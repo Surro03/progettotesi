@@ -2,6 +2,7 @@
 <html lang="it" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
+    <link th:href="@{/css/style.css}" rel="stylesheet" />
     <title>Dettagli edificio</title>
 </head>
 <body>
@@ -27,11 +28,13 @@
     <h2>Asset dell'edificio</h2>
 
     <!-- Messaggio se la lista è vuota -->
-    <p th:if="${#lists.isEmpty(assets)}">Nessun asset associato a questo edificio.</p>
+    <div th:if="${page.totalElements == 0}">
+        Non ci sono asset presenti nell'edificio
+    </div>
     <!-- Tabella asset se presenti -->
-    <div th:unless="${#lists.isEmpty(assets)}">
+    <div th:if="${page.totalElements > 0}">
         <p><strong>Totale:</strong> <span th:text="${assets.size()}">0</span></p>
-        <table>
+        <table id="assetTable">
             <thead>
             <tr>
                 <th>ID</th>
@@ -39,10 +42,16 @@
                 <th>Marca</th>
                 <th>Tipo</th>
                 <th>Modello</th>
-                <th>Protocollo</th>
+                <th scope="col">
+                    <a th:with="isDesc=${param.sort != null and #strings.contains(param.sort,'commProtocol,desc')},
+                     nextDir=${isDesc} ? 'asc' : 'desc'"
+                       th:href="@{/buildings/{buildingId}(buildingId=${building.id}, page=0, size=${page.size}, sort=${'commProtocol,'+nextDir})}">
+                        Tipo
+                    </a>
+                </th>
                 <th>Endpoint</th>
                 <th>ID Utente</th>
-                <th th:cellpadding="15px">Azioni</th>
+                <th>Azioni</th>
             </tr>
             </thead>
             <tbody>
@@ -55,22 +64,45 @@
                 <td th:text="${a.commProtocol}">MODBUS</td>
                 <td th:text="${a.endpoint}">192.168.1.10:502</td>
                 <td th:text="${a.user.id}">42</td>
-                <td>
-                    <form th:action="@{/buildings/{buildingId}/assets/{assetId}/delete(buildingId=${building.id},assetId=${a.id})}"
-                           method="post"
-                           onsubmit="return confirm('Eliminare questo asset?');">
+                <td class="actions-cell">
+                    <form th:action="@{/buildings/{buildingId}/assets/{assetId}/delete(buildingId=${building.id},assetId=${a.id})}" class="actions-item" onsubmit="return confirm('Eliminare questo asset?');">
                         <button type="submit">Elimina Asset</button>
                     </form>
+                    <button type="button" class="actions-item"
+                            th:onclick="|location.href='@{/buildings/{buildingId}/assets/{assetId}/edit(buildingId=${building.id},assetId=${a.id})}'|">
+                        Modifica Asset
+                    </button>
                 </td>
-                <td> <button type="button"
-                             th:onclick="|location.href='@{/buildings/{buildingId}/assets/{assetId}/edit(buildingId=${building.id},assetId=${a.id})}'|">
-                    Modifica Asset
-                </button></td>
+
             </tr>
 
             </tbody>
 
         </table>
+
+        <nav aria-label="Paginazione" class="pager">
+            <div class="pager-compact">
+                <!-- Precedente -->
+                <a th:if="${page.hasPrevious()}"
+                   th:href="@{/buildings/{buildingId}(buildingId=${building.id}, page=${page.number-1}, size=${page.size}, sort=${param.sort} ?: 'commProtocol,asc')}">❮</a>
+                <span th:unless="${page.hasPrevious()}" class="disabled">❮</span>
+
+                <!-- Pagina Attuale -->
+                <a th:text="${page.number+1}">1</a>
+
+                <!-- Successiva -->
+                <a th:if="${page.hasNext()}"
+                   th:href="@{/buildings/{buildingId}(buildingId=${building.id}, page=${page.number+1}, size=${page.size}, sort=${param.sort} ?: 'commProtocol,asc')}">❯</a>
+                <span th:unless="${page.hasNext()}" class="disabled">❯</span>
+            </div>
+        </nav>
+
+        <span class="pager-info">
+          Stai vedendo i risultati dall'
+          <strong th:text="${page.totalElements == 0 ? 0 : page.number*page.size + 1}">1</strong> al
+          <strong th:text="${ ((page.number+1)*page.size) > page.totalElements ? page.totalElements : ((page.number+1)*page.size) }">1</strong>
+          di totale <strong th:text="${page.totalElements}">0</strong> <span th:text="${page.totalElements} == 1  ? 'risultato' : 'risultati'">risultato</span>
+        </span>
 
     </div>
     <button type="button"

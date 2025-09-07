@@ -70,11 +70,11 @@
 
         <!-- Info "mostra X–Y di Z" -->
         <span class="pager-info">
-      Stai vedendo i risultati dall'
-      <strong th:text="${page.totalElements == 0 ? 0 : page.number*page.size + 1}">1</strong> al
-      <strong th:text="${ ((page.number+1)*page.size) > page.totalElements ? page.totalElements : ((page.number+1)*page.size) }">1</strong>
-      di totale <strong th:text="${page.totalElements}">0</strong> <span th:text="${page.totalElements} == 1  ? risultato : risultati">risultato</span>
-    </span>
+          Stai vedendo i risultati dall'
+          <strong th:text="${page.totalElements == 0 ? 0 : page.number*page.size + 1}">1</strong> al
+          <strong th:text="${ ((page.number+1)*page.size) > page.totalElements ? page.totalElements : ((page.number+1)*page.size) }">1</strong>
+          di totale <strong th:text="${page.totalElements}">0</strong> <span th:text="${page.totalElements} == 1  ? 'risultato' : 'risultati'">risultato</span>
+        </span>
 
         <!-- Cambio size (preserva sort e pagina) -->
         <form method="get" th:action="@{/buildings}" class="page-size">

@@ -2,6 +2,8 @@ package it.univaq.progettotesi.service;
 
 import it.univaq.progettotesi.entity.*;
 import it.univaq.progettotesi.repository.AssetRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,10 +27,9 @@ public class AssetService {
         return AssetRepository.findAll();
     }
 
-    public List<Asset> findByBuildingId(Long buildingId) {
-        return AssetRepository.findByBuilding_Id(buildingId);
+    public Page<Asset> findByBuildingId(Long buildingId,  Pageable pageable) {
+        return AssetRepository.findByBuilding_Id(buildingId,  pageable);
     }
-
     public Optional<Asset> findById(Long id) {
         return AssetRepository.findById(id);
     }
@@ -61,8 +62,9 @@ public class AssetService {
         a.setModel(model);
         a.setCommProtocol(commProtocol);
         a.setEndpoint(endpoint);
+        Asset asset = AssetRepository.save(a);
         buildingConfigService.saveBuildingConfig(building.getId());
-        return AssetRepository.save(a);
+        return asset;
     }
 
     public void delete(Long id) {

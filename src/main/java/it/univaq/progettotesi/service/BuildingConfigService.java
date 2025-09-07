@@ -37,7 +37,7 @@ public class BuildingConfigService {
                 .orElseGet(() -> new BuildingConfig(buildingId, buildingRef, 0));
 
         JsonNode payload = builder.buildPayload(buildingId);
-        buildingConfig.setJson(payload.toString());
+        buildingConfig.setJson(payload.toPrettyString());
         buildingConfig.setVersion(buildingConfig.getVersion() + 1);
 
         return buildingConfigRepository.saveAndFlush(buildingConfig);
@@ -50,7 +50,7 @@ public class BuildingConfigService {
     }
 
     @Transactional(readOnly = true)
-    public JsonNode readJson(long buildingId) {
+    public JsonNode getJson(long buildingId) {
         var config =  buildingConfigRepository.findById(buildingId).orElseThrow(() -> new EntityNotFoundException("Building with id " + buildingId + " not found"));
         try {
             return mapper.readTree(config.getJson());
@@ -60,7 +60,7 @@ public class BuildingConfigService {
     }
 
     @Transactional(readOnly = true)
-    public String readJsonString(long buildingId) {
+    public String getJsonString(long buildingId) {
         return buildingConfigRepository.findById(buildingId)
                 .map(BuildingConfig::getJson)
                 .orElseThrow(() -> new EntityNotFoundException(
