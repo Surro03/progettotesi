@@ -15,5 +15,5 @@ public interface BuildingRepository extends JpaRepository<Building, Long>{
     Optional<Building> findByName(String name);
     boolean existsByName(String name);
 
-    Page<Building> findByUser_Id(Long id, Pageable pageable);
+    Page<Building> findByAdmin_Id(Long id, Pageable pageable);
 }

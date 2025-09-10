@@ -18,8 +18,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Controller
 @RequestMapping("/buildings")
 public class BuildingController {
@@ -41,8 +39,8 @@ public class BuildingController {
                        @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
                        @PageableDefault(size = 5, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
 
-        var u = userService.findByEmail(user.getUsername()).orElseThrow();
-        Page<Building> page = buildingService.findByUserId(u.getId(), pageable);
+        var u = userService.findAdminByEmail(user.getUsername()).orElseThrow();
+        Page<Building> page = buildingService.findByAdminId(u.getId(), pageable);
 
         model.addAttribute("page", page);                 // l'oggetto Page<Building>
         model.addAttribute("buildings", page.getContent()); // solo la lista per il <tbody>
@@ -63,7 +61,7 @@ public class BuildingController {
             model.addAttribute("edit", false);
             return "buildings/form";
         }
-        var u = userService.findByEmail(user.getUsername()).orElseThrow();
+        var u = userService.findAdminByEmail(user.getUsername()).orElseThrow();
         Building building = buildingService.create(u, form.name(), form.address());
         return "redirect:/buildings/" + building.getId();
     }
@@ -71,13 +69,13 @@ public class BuildingController {
     @GetMapping("/{buildingId}")
     public String buildingDetails(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
                                   @PageableDefault(size = 5, sort = "commProtocol", direction = Sort.Direction.ASC) Pageable pageable) {
-        var u = userService.findByEmail(user.getUsername()).orElseThrow();
+        var u = userService.findAdminByEmail(user.getUsername()).orElseThrow();
         if(buildingService.findById(buildingId).isEmpty()) {
             model.addAttribute("searchError", "L'edifico con id: " + buildingId + " non esiste");
             return "redirect:/buildings/";
         }
         Building building = buildingService.findById(buildingId).orElseThrow();
-        if(!u.getId().equals(building.getUser().getId())){
+        if(!u.getId().equals(building.getAdmin().getId())){
             model.addAttribute("permissionError", "Non sei il proprietario di questo edificio");
             return "redirect:/buildings/";
         }
@@ -118,7 +116,7 @@ public class BuildingController {
 
     @PostMapping("/{buildingId}/delete")
     public String deleteBuilding(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
-        var u = userService.findByEmail(user.getUsername()).orElseThrow();
+        var u = userService.findAdminByEmail(user.getUsername()).orElseThrow();
         buildingService.delete(buildingId);
         model.addAttribute("deleted", true);
         return "redirect:/buildings";
@@ -147,7 +145,7 @@ public class BuildingController {
             model.addAttribute("formError", bindingResult.getFieldError().getDefaultMessage());
             return "assets/form";
         }
-        var u =  userService.findByEmail(user.getUsername()).orElseThrow();
+        var u =  userService.findAdminByEmail(user.getUsername()).orElseThrow();
         var b = buildingService.findById(buildingId).orElseThrow();
         assetService.create( u, b, assetForm.name(), assetForm.brand(), assetForm.type(), assetForm.model(), assetForm.commProtocol(), "");
         return "redirect:/buildings/"  + buildingId;

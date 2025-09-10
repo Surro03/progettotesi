@@ -65,7 +65,7 @@
                 <td th:text="${a.endpoint}">192.168.1.10:502</td>
                 <td th:text="${a.user.id}">42</td>
                 <td class="actions-cell">
-                    <form th:action="@{/buildings/{buildingId}/assets/{assetId}/delete(buildingId=${building.id},assetId=${a.id})}" class="actions-item" onsubmit="return confirm('Eliminare questo asset?');">
+                    <form th:action="@{/buildings/{buildingId}/assets/{assetId}/delete(buildingId=${building.id},assetId=${a.id})}" method="post" class="actions-item" onsubmit="return confirm('Eliminare questo asset?');">
                         <button type="submit">Elimina Asset</button>
                     </form>
                     <button type="button" class="actions-item"

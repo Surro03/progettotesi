@@ -1,26 +1,18 @@
 package it.univaq.progettotesi.controller;
 
 import it.univaq.progettotesi.config.MyUserDetailsService;
-import it.univaq.progettotesi.entity.Building;
-import it.univaq.progettotesi.entity.User;
 import it.univaq.progettotesi.forms.RegisterForm;
 import it.univaq.progettotesi.service.BuildingService;
 import it.univaq.progettotesi.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.support.SessionStatus;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/user/")
@@ -40,14 +32,14 @@ public class UserController {
 
     @GetMapping("/details")
     public String userDetails(Model model,  @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
-        var u = userService.findByEmail(user.getUsername()).orElse(null);
+        var u = userService.findAdminByEmail(user.getUsername()).orElse(null);
         model.addAttribute("user", u);
         return "user/details";
     }
 
     @GetMapping("/edit")
     public String userForm(Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
-        var u = userService.findByEmail(user.getUsername()).orElse(null);
+        var u = userService.findAdminByEmail(user.getUsername()).orElse(null);
         model.addAttribute("registerForm", new RegisterForm(u.getName(), u.getSurname() ,u.getEmail(), ""));
         return "user/form";
     }
@@ -58,9 +50,11 @@ public class UserController {
                            @AuthenticationPrincipal org.springframework.security.core.userdetails.User principal,
                            Model model) {
 
-        var u = userService.findByEmail(principal.getUsername()).orElseThrow();
+        var u = userService.findAdminByEmail(principal.getUsername()).orElseThrow();
 
-        if (binding.hasErrors()) return "user/form";
+        if (binding.hasErrors()) {
+            return "user/form";
+        }
 
         // email cambiata?
         boolean emailChanged = !form.email().equalsIgnoreCase(u.getEmail());
@@ -71,14 +65,14 @@ public class UserController {
             u.setPassword(passwordEncoder.encode(form.password()));
         }
         if (emailChanged) {
-            if (userService.existsByEmail(form.email())) {
+            if (userService.existsAdminByEmail(form.email())) {
                 binding.rejectValue("email", "email.taken", "Email già in uso");
                 return "user/form";
             }
             u.setEmail(form.email());
         }
 
-        userService.save(u);
+        userService.saveAdmin(u);
         var context = SecurityContextHolder.getContext();
         var currentAuth = context.getAuthentication();
 

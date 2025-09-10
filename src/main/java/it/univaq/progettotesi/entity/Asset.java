@@ -19,7 +19,7 @@ public class Asset {
     @ManyToOne(optional=false)
     @JoinColumn(name = "user_id")
     @Getter
-    private User user;
+    private Admin user;
 
     @ManyToOne(optional=false)
     @JoinColumn(name = "building_id")
@@ -62,7 +62,7 @@ public class Asset {
         //vuoto per JPA
     }
 
-    public Asset(User user, Building building, String name, String brand, AssetType type, String model, CommProtocol commProtocol, String endpoint) {
+    public Asset(Admin user, Building building, String name, String brand, AssetType type, String model, CommProtocol commProtocol, String endpoint) {
         this.user = user;
         this.building = building;
         this.name = name;

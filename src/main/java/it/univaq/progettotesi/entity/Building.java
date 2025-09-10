@@ -2,6 +2,9 @@ package it.univaq.progettotesi.entity;
 
 
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,12 +16,19 @@ public class Building {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter
+    @Column(nullable=false, name = "building_id")
     private Long id;
 
-    @ManyToOne(optional=false)
-    @JoinColumn(name = "user_id")
-    @Getter
-    private User user;
+    @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Getter @Setter
+    private List<Client> clients = new ArrayList<>();
+
+    // molti building per un admin
+    @ManyToOne
+    @JoinColumn(name = "admin_id", nullable = false)
+    @Getter @Setter
+    private Admin admin;
+
 
     @Column(nullable = false)
     @Getter
@@ -37,10 +47,14 @@ public class Building {
         // no-args constructor richiesto da JPA
     }
 
-    public Building(User user, String name, String address) {
-        this.user = user;
+    public Building(Admin user, String name, String address) {
+        this.admin = user;
         this.name = name;
         this.address = address;
+    }
+
+    public void addClient(Client client) {
+        this.clients.add(client);
     }
 
 
@@ -54,14 +68,14 @@ public class Building {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.id, this.user.getId());
+        return Objects.hash(this.id, this.admin.getId());
     }
 
     @Override
     public String toString() {
         return "Building{" +
                 "id=" + this.id +
-                ", user= " + this.user +
+                ", user= " + this.admin +
                 ", name= " + this.name +
                 ", address= "+ this.address + '}';
     }

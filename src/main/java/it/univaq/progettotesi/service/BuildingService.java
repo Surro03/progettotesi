@@ -1,6 +1,8 @@
 package it.univaq.progettotesi.service;
 
+import it.univaq.progettotesi.entity.Admin;
 import it.univaq.progettotesi.entity.Building;
+import it.univaq.progettotesi.entity.Client;
 import it.univaq.progettotesi.entity.User;
 import it.univaq.progettotesi.repository.BuildingRepository;
 import org.springframework.data.domain.Page;
@@ -28,11 +30,11 @@ public class BuildingService {
         return buildingRepository.findById(id);
     }
 
-    public Page<Building> findByUserId(Long id,  Pageable pageable) {
-        return buildingRepository.findByUser_Id(id, pageable);
+    public Page<Building> findByAdminId(Long id,  Pageable pageable) {
+        return buildingRepository.findByAdmin_Id(id, pageable);
     }
 
-    public Building create(User user, String name, String address) {
+    public Building create(Admin user, String name, String address) {
         Building b = new Building(user, name, address);
         return buildingRepository.save(b);
     }

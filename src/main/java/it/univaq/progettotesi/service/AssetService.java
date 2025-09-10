@@ -39,7 +39,7 @@ public class AssetService {
     }
 
     @Transactional
-    public Asset create(User user, Building building, String name, String brand,
+    public Asset create(Admin user, Building building, String name, String brand,
                         AssetType type, String model, CommProtocol commProtocol, String endpoint) {
         Asset a = new Asset(user, building, name, brand, type, model, commProtocol, endpoint);
         Asset saved = AssetRepository.saveAndFlush(a);

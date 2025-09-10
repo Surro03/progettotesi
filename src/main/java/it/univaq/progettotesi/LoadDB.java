@@ -2,7 +2,7 @@ package it.univaq.progettotesi;
 
 import it.univaq.progettotesi.entity.*;
 import it.univaq.progettotesi.repository.AssetRepository;
-import it.univaq.progettotesi.repository.UserRepository;
+import it.univaq.progettotesi.repository.AdminRepository;
 import it.univaq.progettotesi.repository.BuildingRepository;
 import it.univaq.progettotesi.service.BuildingConfigService;
 import org.slf4j.Logger;
@@ -18,14 +18,14 @@ class LoadDatabase {
 
     @Bean
     CommandLineRunner initDatabase(
-            UserRepository userRepo,
+            AdminRepository userRepo,
             BuildingRepository buildingRepo,
             AssetRepository assetRepo,
             BuildingConfigService buildingConfigService
     ) {
         return args -> {
             // 1) User + Building
-            User u = new User("Samuele", "Surricchio", "samuele2003@icloud.com", "{noop}ciao", "CLIENT");
+            Admin u = new Admin("Samuele", "Surricchio", "samuele2003@icloud.com", "{noop}ciao");
             u = userRepo.save(u);
             log.info("Preloaded user: {}", u.getEmail());
 
