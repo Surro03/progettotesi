@@ -3,6 +3,7 @@ package it.univaq.progettotesi.controller;
 import it.univaq.progettotesi.entity.*;
 import it.univaq.progettotesi.forms.AssetForm;
 import it.univaq.progettotesi.forms.BuildingForm;
+import it.univaq.progettotesi.forms.RegisterForm;
 import it.univaq.progettotesi.service.AssetService;
 import it.univaq.progettotesi.service.BuildingConfigService;
 import it.univaq.progettotesi.service.BuildingService;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/buildings")
@@ -44,6 +47,7 @@ public class BuildingController {
 
         model.addAttribute("page", page);                 // l'oggetto Page<Building>
         model.addAttribute("buildings", page.getContent()); // solo la lista per il <tbody>
+
         return "buildings/list"; // templates/buildings/list.html
     }
 
@@ -80,8 +84,10 @@ public class BuildingController {
             return "redirect:/buildings/";
         }
         Page<Asset> page = assetService.findByBuildingId(buildingId, pageable);
+        List<Client> clients = building.getClients();
         model.addAttribute("building", building);
         model.addAttribute("page", page);
+        model.addAttribute("clients", clients);
         model.addAttribute("assets", page.getContent());
         return "buildings/details";
     }
@@ -179,6 +185,36 @@ public class BuildingController {
     @PostMapping("/{buildingId}/assets/{assetId}/delete")
     public String deleteAsset(@PathVariable Long buildingId, @PathVariable Long assetId, Model model) {
         assetService.delete(assetId);
+        model.addAttribute("deleted", true);
+        return "redirect:/buildings/"  + buildingId;
+    }
+
+    @GetMapping("/{buildingId}/clients/add")
+    public String clientForm(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal User user) {
+        model.addAttribute("registerForm", new RegisterForm("","","",""));
+        model.addAttribute("buildingId", buildingId );
+        model.addAttribute("client", true);
+        return "user/form";
+    }
+
+    @PostMapping("/{buildingId}/clients/add")
+    public String addClient(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal User user, @Valid RegisterForm registerForm, BindingResult result) {
+        if(result.hasErrors()){
+            model.addAttribute("formError", result.getFieldError().getDefaultMessage());
+            model.addAttribute("buildingId", buildingId );
+            model.addAttribute("client", true);
+            return "user/form";
+        }
+        Building building = buildingService.findById(buildingId).orElseThrow();
+        userService.createClient(registerForm.name(), registerForm.surname(), registerForm.email(), registerForm.password(), building);
+        model.addAttribute("created", true);
+        return "redirect:/buildings/"  + buildingId;
+
+    }
+
+    @PostMapping("/{buildingId}/clients/{clientId}/delete")
+    public String deleteClient(@PathVariable Long buildingId, @PathVariable Long clientId, Model model) {
+        userService.deleteClient(clientId);
         model.addAttribute("deleted", true);
         return "redirect:/buildings/"  + buildingId;
     }

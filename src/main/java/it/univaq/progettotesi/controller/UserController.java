@@ -45,7 +45,7 @@ public class UserController {
     }
 
     @PostMapping("/edit")
-    public String userEdit(@Valid @ModelAttribute("form") RegisterForm form,
+    public String userEdit(@Valid @ModelAttribute("registerForm")  RegisterForm form,
                            BindingResult binding,
                            @AuthenticationPrincipal org.springframework.security.core.userdetails.User principal,
                            Model model) {
@@ -66,7 +66,7 @@ public class UserController {
         }
         if (emailChanged) {
             if (userService.existsAdminByEmail(form.email())) {
-                binding.rejectValue("email", "email.taken", "Email già in uso");
+                binding.rejectValue("emailError", "email.taken", "Email già in uso");
                 return "user/form";
             }
             u.setEmail(form.email());

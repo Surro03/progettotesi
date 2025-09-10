@@ -13,7 +13,7 @@
     <p><strong>ID:</strong> <span th:text="${building.id}">1</span></p>
     <p><strong>Nome:</strong> <span th:text="${building.name}">Edificio A</span></p>
     <p><strong>Indirizzo:</strong> <span th:text="${building.address}">Via Roma 1</span></p>
-    <p><strong>ID Utente proprietario:</strong> <span th:text="${building.user.id}">42</span></p>
+    <p><strong>ID Utente proprietario:</strong> <span th:text="${building.admin.id}">42</span></p>
     <p><a th:href="@{|/buildings/${buildingId}/edit|}">Modifica</a></p>
 </section>
 
@@ -110,6 +110,64 @@
         Aggiungi asset
     </button>
 </section>
+
+<hr />
+
+<hr/>
+
+    <section>
+        <h2>Inquilini dell'edificio</h2>
+
+        <!-- Messaggio se la lista è vuota -->
+        <div th:if="${#lists.isEmpty(clients)}">
+            L'edificio non ha inquilini
+        </div>
+
+        <!-- Tabella clienti se presenti -->
+        <div th:if="${!#lists.isEmpty(clients)}">
+            <p><strong>Totale:</strong> <span th:text="${clients.size()}">0</span></p>
+
+            <table id="clientTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Cognome</th>
+                    <th>Email</th>
+                    <th>Azioni</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="c : ${clients}">
+                    <td th:text="${c.id}">10</td>
+                    <td th:text="${c.name}">Mario</td>
+                    <td th:text="${c.surname}">Rossi</td>
+                    <td th:text="${c.email}">mario.rossi@example.com</td>
+                    <td class="actions-cell">
+                        <form th:action="@{/buildings/{buildingId}/clients/{clientId}/delete(buildingId=${building.id}, clientId=${c.id})}"
+                              method="post" class="actions-item"
+                              onsubmit="return confirm('Eliminare questo cliente?');">
+                            <!-- CSRF -->
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <button type="submit">Elimina Cliente</button>
+                        </form>
+
+                        <button type="button" class="actions-item"
+                                th:onclick="|location.href='@{/buildings/{buildingId}/clients/{clientId}/edit(buildingId=${building.id}, clientId=${c.id})}'|">
+                            Modifica Cliente
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <button type="button"
+                th:onclick="|location.href='@{/buildings/{buildingId}/clients/add(buildingId=${building.id})}'|">
+            Aggiungi Cliente
+        </button>
+    </section>
+
 
 <hr />
 
