@@ -24,6 +24,10 @@ public record AssetForm(
         String model,
 
         
-        CommProtocol commProtocol
+        CommProtocol commProtocol,
+
+        @NotBlank(message = "Inserire un endpoint valido")
+        String endpoint
+
 ) {
 }

@@ -41,6 +41,8 @@ public class UserController {
     public String userForm(Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
         var u = userService.findAdminByEmail(user.getUsername()).orElse(null);
         model.addAttribute("registerForm", new RegisterForm(u.getName(), u.getSurname() ,u.getEmail(), ""));
+        model.addAttribute("client",false);
+        model.addAttribute("edit", false);
         return "user/form";
     }
 

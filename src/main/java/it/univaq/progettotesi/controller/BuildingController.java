@@ -18,7 +18,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Controller
@@ -85,6 +87,10 @@ public class BuildingController {
         }
         Page<Asset> page = assetService.findByBuildingId(buildingId, pageable);
         List<Client> clients = building.getClients();
+        clients.sort(
+                Comparator.comparing(Client::getName)
+                        .thenComparing(Client::getSurname)
+        );
         model.addAttribute("building", building);
         model.addAttribute("page", page);
         model.addAttribute("clients", clients);
@@ -140,7 +146,7 @@ public class BuildingController {
 
     @GetMapping("/{buildingId}/assets/new")
     public String assetForm(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
-        model.addAttribute("assetForm", new AssetForm("","", AssetType.INVERTER,"", CommProtocol.MODBUS));
+        model.addAttribute("assetForm", new AssetForm("","", AssetType.INVERTER,"", CommProtocol.MODBUS,""));
         model.addAttribute("buildingId", buildingId );
         return "assets/form";
     }
@@ -160,7 +166,7 @@ public class BuildingController {
     @GetMapping("/{buildingId}/assets/{assetId}/edit")
     public String assetFormEdit(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user, @PathVariable Long assetId) {
         Asset asset = assetService.findById(assetId).orElseThrow();
-        model.addAttribute("assetForm", new AssetForm(asset.getName(),asset.getBrand(), asset.getType(), asset.getModel(), asset.getCommProtocol()));
+        model.addAttribute("assetForm", new AssetForm(asset.getName(),asset.getBrand(), asset.getType(), asset.getModel(), asset.getCommProtocol(),asset.getEndpoint()));
         model.addAttribute("buildingId", buildingId );
         model.addAttribute("assetId", assetId );
         model.addAttribute("edit", true);
@@ -206,10 +212,39 @@ public class BuildingController {
             return "user/form";
         }
         Building building = buildingService.findById(buildingId).orElseThrow();
-        userService.createClient(registerForm.name(), registerForm.surname(), registerForm.email(), registerForm.password(), building);
+        Client client = userService.createClient(registerForm.name(), registerForm.surname(), registerForm.email(), registerForm.password(), building);
+        building.addClient(client);
+        buildingService.save(building);
         model.addAttribute("created", true);
         return "redirect:/buildings/"  + buildingId;
 
+    }
+
+    @GetMapping("/{buildingId}/clients/{clientId}/edit")
+    public String clientFormEdit(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user, @PathVariable Long clientId) {
+        Client client = userService.findClientById(clientId).orElseThrow();
+        model.addAttribute("registerForm", new RegisterForm(client.getName(), client.getSurname(), client.getEmail(), ""));
+        model.addAttribute("buildingId", buildingId );
+        model.addAttribute("clientId", clientId );
+        model.addAttribute("client", true);
+        model.addAttribute("edit", true);
+        return "user/form";
+    }
+
+    @PostMapping("/{buildingId}/clients/{clientId}/edit")
+    public String editClient(@PathVariable Long clientId, @PathVariable Long buildingId, @Valid RegisterForm registerForm, BindingResult bindingResult, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user, RedirectAttributes ra) {
+        if(bindingResult.hasErrors()){
+            model.addAttribute("formError", bindingResult.getFieldError().getDefaultMessage());
+            model.addAttribute("buildingId", buildingId );
+            model.addAttribute("clientId", clientId );
+            model.addAttribute("edit", true);
+            model.addAttribute("client", true);
+            return "assets/form";
+        }
+        Building building = buildingService.findById(buildingId).orElseThrow();
+        userService.updateClient(clientId, registerForm.name(), registerForm.surname(), registerForm.email(), registerForm.password(), building);
+        ra.addAttribute("updated", true);
+        return "redirect:/buildings/"  + buildingId;
     }
 
     @PostMapping("/{buildingId}/clients/{clientId}/delete")

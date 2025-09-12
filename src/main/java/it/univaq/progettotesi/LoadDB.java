@@ -46,14 +46,26 @@ class LoadDatabase {
             assetRepo.saveAll(java.util.List.of(a1, a2, a3));
             assetRepo.flush();
 
-            // 3) Rigenera e salva la BuildingConfig
+            // 3) Clienti fittizi collegati al building "Cinque"
+            Client c1 = new Client("Mario", "Rossi", "mario.rossi@example.com", "{noop}password", b);
+            Client c2 = new Client("Giulia", "Bianchi", "giulia.bianchi@example.com", "{noop}password", b);
+            Client c3 = new Client("Luca", "Verdi", "luca.verdi@example.com", "{noop}password", b);
+            Client c4 = new Client("Sara", "Neri", "sara.neri@example.com", "{noop}password", b);
+            Client c5 = new Client("Paolo", "Gialli", "paolo.gialli@example.com", "{noop}password", b);
+
+            // Aggiungo alla lista (cascade ALL da Building → Client)
+            b.getClients().addAll(java.util.List.of(c1, c2, c3, c4, c5));
+            // Re-salvo il building per propagare il persist dei client
+            b = buildingRepo.saveAndFlush(b);
+            log.info("Preloaded {} clients for building {}", b.getClients().size(), b.getName());
+
+            // 4) Rigenera e salva la BuildingConfig
             var cfg = buildingConfigService.saveBuildingConfig(b.getId());
 
-            // 4) Log di controllo
+            // 5) Log di controllo
             log.info("Generated BuildingConfig v{} for building {} at {}",
                     cfg.getVersion(), b.getId(), cfg.getUpdatedAt());
             log.info("Config JSON: {}", cfg.getJson());
         };
     }
 }
-

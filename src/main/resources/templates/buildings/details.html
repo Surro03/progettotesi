@@ -13,7 +13,7 @@
     <p><strong>ID:</strong> <span th:text="${building.id}">1</span></p>
     <p><strong>Nome:</strong> <span th:text="${building.name}">Edificio A</span></p>
     <p><strong>Indirizzo:</strong> <span th:text="${building.address}">Via Roma 1</span></p>
-    <p><strong>ID Utente proprietario:</strong> <span th:text="${building.admin.id}">42</span></p>
+    <p><strong>Email Admin:</strong> <span th:text="${building.admin.email}">mario.rossi@email.com</span></p>
     <p><a th:href="@{|/buildings/${buildingId}/edit|}">Modifica</a></p>
 </section>
 
@@ -23,7 +23,9 @@
 </button>
 
 <hr/>
-
+<div th:if="${updated}">
+    Elemento aggiornato con successo
+</div>
 <section>
     <h2>Asset dell'edificio</h2>
 
@@ -46,11 +48,10 @@
                     <a th:with="isDesc=${param.sort != null and #strings.contains(param.sort,'commProtocol,desc')},
                      nextDir=${isDesc} ? 'asc' : 'desc'"
                        th:href="@{/buildings/{buildingId}(buildingId=${building.id}, page=0, size=${page.size}, sort=${'commProtocol,'+nextDir})}">
-                        Tipo
+                        Protocollo di comunicazione
                     </a>
                 </th>
                 <th>Endpoint</th>
-                <th>ID Utente</th>
                 <th>Azioni</th>
             </tr>
             </thead>
@@ -63,7 +64,6 @@
                 <td th:text="${a.model}">X1000</td>
                 <td th:text="${a.commProtocol}">MODBUS</td>
                 <td th:text="${a.endpoint}">192.168.1.10:502</td>
-                <td th:text="${a.user.id}">42</td>
                 <td class="actions-cell">
                     <form th:action="@{/buildings/{buildingId}/assets/{assetId}/delete(buildingId=${building.id},assetId=${a.id})}" method="post" class="actions-item" onsubmit="return confirm('Eliminare questo asset?');">
                         <button type="submit">Elimina Asset</button>
@@ -111,7 +111,6 @@
     </button>
 </section>
 
-<hr />
 
 <hr/>
 
@@ -169,7 +168,7 @@
     </section>
 
 
-<hr />
+<hr/>
 
 <p>
     <a href="/buildings">← Torna all'elenco edifici</a>

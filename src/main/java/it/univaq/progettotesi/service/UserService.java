@@ -91,11 +91,14 @@ public class UserService {
         return ClientRepository.save(client);
     }
 
-    public Client updateClient(Long id, String name, String surname) {
+    public Client updateClient(Long id, String name, String surname,  String email, String password, Building building) {
         Client c = ClientRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Client non trovato: " + id));
         c.setName(name);
         c.setSurname(surname);
+        c.setEmail(email);
+        c.setPassword(passwordEncoder.encode(password));
+        c.setBuilding(building);
         return ClientRepository.save(c);
     }
 
