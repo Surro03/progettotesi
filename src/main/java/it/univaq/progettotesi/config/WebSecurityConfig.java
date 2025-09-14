@@ -21,20 +21,21 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/login", "/register").permitAll()  //Endpoint che non richiedono il login
-                .anyRequest().authenticated()) //Tutti gli altri richiedono identificazione
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .loginProcessingUrl("/authenticate") // URL che Spring usa per il POST
-                        .usernameParameter("email")
-                        .passwordParameter("password")
-                        .defaultSuccessUrl("/home", true)    // redirect dopo login
-                        .failureUrl("/login?error=true")     // redirect in caso di errore
-                )
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/login?logout=true")
-                        .permitAll()
-                );
+                        .requestMatchers("/css/**", "/javascript/**", "/images/**").permitAll()
+                        .requestMatchers("/login", "/register").permitAll()  //Endpoint che non richiedono il login
+                        .anyRequest().authenticated()) //Tutti gli altri richiedono identificazione
+                        .formLogin(form -> form
+                                .loginPage("/login")
+                                .loginProcessingUrl("/authenticate") // URL che Spring usa per il POST
+                                .usernameParameter("email")
+                                .passwordParameter("password")
+                                .defaultSuccessUrl("/home", true)    // redirect dopo login
+                                .failureUrl("/login?error=true")     // redirect in caso di errore
+                        )
+                        .logout(logout -> logout
+                                .logoutSuccessUrl("/login?logout=true")
+                                .permitAll()
+                        );
         return http.build();
     }
 

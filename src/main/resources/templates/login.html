@@ -1,42 +1,84 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <script th:src="@{/javascript/script.js}" defer></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 400px;
+            margin: 2rem auto;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 0.3rem;
+            font-weight: bold;
+        }
+        input {
+            padding: 0.5rem;
+            font-size: 1rem;
+        }
+        .password-wrapper {
+            display: flex;
+            align-items: center;
+        }
+        .password-wrapper input {
+            flex: 1;
+        }
+        .password-wrapper button {
+            margin-left: 0.5rem;
+            padding: 0.5rem 0.8rem;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        button[type="submit"], .btn-secondary {
+            padding: 0.6rem;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 <h2>Effettua il Login</h2>
-<div th:if="${param.error}">
-    Username o password errati.<br>
-</div>
-<div th:if="${param.logout}">
-    Logout eseguito con successo. <br>
-</div>
-<div th:if="${param.register}">
-    Registrazione avvenuta con successo. <br>
-</div>
+
+<div th:if="${param.error}">Username o password errati.<br></div>
+<div th:if="${param.logout}">Logout eseguito con successo.<br></div>
+<div th:if="${param.register}">Registrazione avvenuta con successo.<br></div>
+
 <form action="/authenticate" method="post" autocomplete="on">
     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
-    <table>
-        <tr>
-            <td><label for="email"> Email:</label></td>
-            <td><input id="email" type="email" name="email" placeholder="Inserisci la tua email" required autofocus></td>
-        </tr>
-        <tr>
-            <td><label for="password"> Password:</label></td>
-            <td><input id="password" type="password" name="password" placeholder="Inserisci la tua password" required autocomplete="off"></td>
-        </tr>
-        <tr>
-            <td colspan="2"><button type="submit">Accedi</button></td>
-        </tr>
-    </table>
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input id="email" type="email" name="email" placeholder="Inserisci la tua email" required autofocus>
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <div class="password-wrapper">
+            <input id="password" type="password" name="password"
+                   placeholder="Inserisci la tua password" required autocomplete="off">
+            <button type="button" id="togglePassword">👁️</button>
+        </div>
+    </div>
+
+    <button type="submit">Accedi</button>
 </form>
 
-
-<div>
+<div style="margin-top:1rem;">
     Non sei registrato?
-    <button type="button"
+    <button type="button" class="btn-secondary"
             th:onclick="|window.location.href='@{/register}'|">
         Registrati
     </button>

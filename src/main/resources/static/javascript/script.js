@@ -60,3 +60,20 @@
         tr.addEventListener('mousedown', () => tr.focus());
     });
 })();
+
+document.addEventListener("DOMContentLoaded", function () {
+    const toggleBtn = document.getElementById("togglePassword");
+    const input = document.getElementById("password");
+
+    if (!toggleBtn || !input) {
+        console.warn("togglePassword o input password non trovati");
+        return;
+    }
+
+    toggleBtn.addEventListener("click", function () {
+        const hidden = input.type === "password";
+        input.type = hidden ? "text" : "password";
+        this.textContent = hidden ? "🙈" : "👁️";
+        this.setAttribute('aria-pressed', String(hidden));
+    });
+});
