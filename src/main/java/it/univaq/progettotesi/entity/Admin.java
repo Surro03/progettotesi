@@ -5,7 +5,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -16,8 +18,8 @@ public class Admin extends User{
     @Getter @Setter
     private List<Building> buildings = new ArrayList<>();
 
-    public Admin(String name, String surname, String email, String password) {
-        super(name,surname,email,password, "ADMIN");
+    public Admin(String name, String surname, String email, String password, LocalDate birthDate, String cellphone) {
+        super(name,surname,email,password, "ADMIN",birthDate,cellphone);
     }
 
     public Admin(){}

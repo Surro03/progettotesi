@@ -1,8 +1,10 @@
 package it.univaq.progettotesi.forms;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDate;
+import java.util.Date;
 
 public record RegisterForm(
 
@@ -20,9 +22,16 @@ public record RegisterForm(
 
         @NotBlank(message = "La password non può essere vuota")
         @Size(min = 8, message = "La password deve contenere almeno 8 caratteri")
-        // @Pattern(
-        //   regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
-        //   message = "La password deve avere almeno 8 caratteri, con maiuscola, minuscola, numero e simbolo"
-        // )
-        String password
+        String password,
+
+        @NotNull(message = "Inserire la data di nascita")
+        @Past(message = "La data di nascita deve essere nel passato")
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE, pattern = "dd/MM/yy")
+        LocalDate birthDate,
+
+        @NotBlank(message = "Inserire un numero di telefono")
+        // E.164 semplificato: opzionale '+' iniziale, 7–15 cifre
+        @Pattern(regexp = "^\\+?[0-9]{7,15}$",
+                message = "Inserire un numero di telefono valido (es. +393331234567)")
+        String cellphone
 ) {}

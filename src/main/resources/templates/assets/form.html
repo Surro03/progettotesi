@@ -11,6 +11,8 @@
     Titolo
 </h2>
 
+<a><span th:text="no">si</span> </a>
+
 <form th:action="${edit}?  @{/buildings/{buildingId}/assets/{assetId}/edit(buildingId=${buildingId},assetId=${assetId})} : @{/buildings/{buildingId}/assets/new(buildingId=${buildingId})}"
       th:object="${assetForm}" method="post">
 
@@ -18,13 +20,13 @@
         <tr>
             <td><label for="name">Nome:</label></td>
             <td><input id="name" type="text" th:field="*{name}" placeholder="Nome asset" required autofocus /></td>
-            <td th:errors="*{name}">Name Error</td>
+            <td th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Errore nome</td>
         </tr>
 
         <tr>
             <td><label for="brand">Brand:</label></td>
             <td><input id="brand" type="text" th:field="*{brand}" placeholder="Marca dell'asset" required /></td>
-            <td th:errors="*{brand}">Brand Error</td>
+            <td th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}">Errore brand</td>
         </tr>
 
         <tr>
@@ -36,13 +38,13 @@
                             th:value="${t}" th:text="${t}"></option>
                 </select>
             </td>
-            <td th:errors="*{type}">Type Error</td>
+            <td th:if="${#fields.hasErrors('type')}" th:errors="*{type}">Errore tipo</td>
         </tr>
 
         <tr>
             <td><label for="model">Modello:</label></td>
             <td><input id="model" type="text" th:field="*{model}" placeholder="Modello dell'asset" required /></td>
-            <td th:errors="*{model}">Model Error</td>
+            <td th:if="${#fields.hasErrors('model')}" th:errors="*{model}">Errore modello</td>
         </tr>
 
         <tr>
@@ -54,7 +56,7 @@
                             th:value="${p}" th:text="${p}"></option>
                 </select>
             </td>
-            <td th:errors="*{commProtocol}">CommProtocol Error</td>
+            <td th:if="${#fields.hasErrors('commProtocol')}" th:errors="*{commProtocol}">Errore protocollo</td>
         </tr>
 
         <tr>

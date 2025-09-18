@@ -40,7 +40,7 @@ public class UserController {
     @GetMapping("/edit")
     public String userForm(Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
         var u = userService.findAdminByEmail(user.getUsername()).orElse(null);
-        model.addAttribute("registerForm", new RegisterForm(u.getName(), u.getSurname() ,u.getEmail(), ""));
+        model.addAttribute("registerForm", new RegisterForm(u.getName(), u.getSurname() ,u.getEmail(), "", u.getBirthDate(), u.getCellphone()));
         model.addAttribute("client",false);
         model.addAttribute("edit", false);
         return "user/form";
@@ -73,7 +73,8 @@ public class UserController {
             }
             u.setEmail(form.email());
         }
-
+        u.setBirthDate(form.birthDate());
+        u.setCellphone(form.cellphone());
         userService.saveAdmin(u);
         var context = SecurityContextHolder.getContext();
         var currentAuth = context.getAuthentication();

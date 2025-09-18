@@ -133,6 +133,8 @@
                     <th>Nome</th>
                     <th>Cognome</th>
                     <th>Email</th>
+                    <th>Data di Nascita</th>
+                    <th>Numero di Cellulare</th>
                     <th>Azioni</th>
                 </tr>
                 </thead>
@@ -142,12 +144,12 @@
                     <td th:text="${c.name}">Mario</td>
                     <td th:text="${c.surname}">Rossi</td>
                     <td th:text="${c.email}">mario.rossi@example.com</td>
+                    <td th:text="${c.birthDate}">12/12/2012</td>
+                    <td th:text="${c.cellphone}">+3780544434</td>
                     <td class="actions-cell">
                         <form th:action="@{/buildings/{buildingId}/clients/{clientId}/delete(buildingId=${building.id}, clientId=${c.id})}"
                               method="post" class="actions-item"
                               onsubmit="return confirm('Eliminare questo cliente?');">
-                            <!-- CSRF -->
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                             <button type="submit">Elimina Cliente</button>
                         </form>
 

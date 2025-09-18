@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 @Entity
 @Table(name = "clients")
 public class Client extends User {
@@ -18,8 +21,8 @@ public class Client extends User {
         super();
     }
 
-    public Client(String name, String surname, String email, String password, Building building) {
-        super(name,surname,email,password, "CLIENT");
+    public Client(String name, String surname, String email, String password, Building building, LocalDate birthDate, String cellphone) {
+        super(name,surname,email,password, "CLIENT", birthDate, cellphone);
         this.building = building;
     }
 

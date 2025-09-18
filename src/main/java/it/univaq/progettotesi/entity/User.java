@@ -3,7 +3,10 @@ package it.univaq.progettotesi.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.Objects;
 
 @MappedSuperclass
@@ -33,6 +36,11 @@ public abstract class User {
     @Getter
     @Setter
     @Column(nullable = false)
+    private String username;
+
+    @Getter
+    @Setter
+    @Column(nullable = false)
     private String password;
 
     @Getter
@@ -40,16 +48,30 @@ public abstract class User {
     @Column(nullable = false)
     private String role;
 
+    @Getter
+    @Setter
+    @Column(nullable = false)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE, pattern = "dd/MM/yy")
+    private LocalDate birthDate;
+    
+    @Getter
+    @Setter
+    @Column(nullable = false)
+    private String cellphone;
+
     public User() {
         // costruttore vuoto richiesto da JPA
     }
 
-    public User(String name, String surname, String email, String password, String role) {
+    public User(String name, String surname, String email, String password, String role,  LocalDate birthDate, String cellphone) {
         this.name = name;
         this.surname = surname;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.birthDate = birthDate;
+        this.cellphone = cellphone;
+        this.username = name+surname;
     }
 
 
