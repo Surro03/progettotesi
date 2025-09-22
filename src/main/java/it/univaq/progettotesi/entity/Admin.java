@@ -19,7 +19,7 @@ public class Admin extends User{
     private List<Building> buildings = new ArrayList<>();
 
     public Admin(String name, String surname, String email, String password, LocalDate birthDate, String cellphone) {
-        super(name,surname,email,password, "ADMIN",birthDate,cellphone);
+        super(name,surname,email,password, "USER",birthDate,cellphone);
     }
 
     public Admin(){}

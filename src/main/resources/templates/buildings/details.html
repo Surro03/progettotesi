@@ -40,8 +40,20 @@
             <thead>
             <tr>
                 <th>ID</th>
-                <th>Nome</th>
-                <th>Marca</th>
+                <th scope="col">
+                    <a th:with="isDesc=${param.sort != null and #strings.contains(param.sort,'name,desc')},
+                     nextDir=${isDesc} ? 'asc' : 'desc'"
+                       th:href="@{/buildings/{buildingId}(buildingId=${building.id}, page=0, size=${page.size}, sort=${'name,'+nextDir})}">
+                        Nome
+                    </a>
+                </th>
+                <th scope="col">
+                    <a th:with="isDesc=${param.sort != null and #strings.contains(param.sort,'brand,desc')},
+                     nextDir=${isDesc} ? 'asc' : 'desc'"
+                       th:href="@{/buildings/{buildingId}(buildingId=${building.id}, page=0, size=${page.size}, sort=${'brand,'+nextDir})}">
+                        Marca
+                    </a>
+                </th>
                 <th>Tipo</th>
                 <th>Modello</th>
                 <th scope="col">
@@ -54,6 +66,7 @@
                 <th>Endpoint</th>
                 <th>Azioni</th>
             </tr>
+
             </thead>
             <tbody>
             <tr th:each="a : ${assets}">
@@ -114,60 +127,123 @@
 
 <hr/>
 
-    <section>
-        <h2>Inquilini dell'edificio</h2>
+<section>
+    <h2>Inquilini dell'edificio</h2>
 
-        <!-- Messaggio se la lista è vuota -->
-        <div th:if="${#lists.isEmpty(clients)}">
-            L'edificio non ha inquilini
-        </div>
+    <!-- Messaggio se la lista è vuota -->
+    <div th:if="${clientsPage == null or clientsPage.totalElements == 0}">
+        L'edificio non ha inquilini
+    </div>
 
-        <!-- Tabella clienti se presenti -->
-        <div th:if="${!#lists.isEmpty(clients)}">
-            <p><strong>Totale:</strong> <span th:text="${clients.size()}">0</span></p>
+    <!-- Tabella clienti se presenti -->
+    <div th:if="${clientsPage != null and clientsPage.totalElements > 0}">
+        <p><strong>Totale:</strong> <span th:text="${clientsPage.totalElements}">0</span></p>
 
-            <table id="clientTable">
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>Cognome</th>
-                    <th>Email</th>
-                    <th>Data di Nascita</th>
-                    <th>Numero di Cellulare</th>
-                    <th>Azioni</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="c : ${clients}">
-                    <td th:text="${c.id}">10</td>
-                    <td th:text="${c.name}">Mario</td>
-                    <td th:text="${c.surname}">Rossi</td>
-                    <td th:text="${c.email}">mario.rossi@example.com</td>
-                    <td th:text="${c.birthDate}">12/12/2012</td>
-                    <td th:text="${c.cellphone}">+3780544434</td>
-                    <td class="actions-cell">
-                        <form th:action="@{/buildings/{buildingId}/clients/{clientId}/delete(buildingId=${building.id}, clientId=${c.id})}"
-                              method="post" class="actions-item"
-                              onsubmit="return confirm('Eliminare questo cliente?');">
-                            <button type="submit">Elimina Cliente</button>
-                        </form>
+        <table id="clientTable">
+            <thead>
+            <tr>
+                <th>ID</th>
 
-                        <button type="button" class="actions-item"
-                                th:onclick="|location.href='@{/buildings/{buildingId}/clients/{clientId}/edit(buildingId=${building.id}, clientId=${c.id})}'|">
-                            Modifica Cliente
-                        </button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+                <!-- NOME: toggle asc/desc su clients_sort -->
+                <th scope="col">
+                    <a th:with="
+                           isDesc=${param.clients_sort != null and #strings.contains(param.clients_sort,'name,desc')},
+                           isAsc=${param.clients_sort != null and #strings.contains(param.clients_sort,'name,asc')},
+                           nextDir=${isDesc} ? 'asc' : 'desc'"
+                       th:href="@{/buildings/{buildingId}(
+                                 buildingId=${building.id},
+                                 clients_page=${0},
+                                 clients_size=${clientsPage.size},
+                                 clients_sort=${'name,'+nextDir}
+                               )}">
+                        Nome
 
-        <button type="button"
-                th:onclick="|location.href='@{/buildings/{buildingId}/clients/add(buildingId=${building.id})}'|">
-            Aggiungi Cliente
-        </button>
-    </section>
+                    </a>
+                </th>
+
+                <!-- COGNOME: toggle asc/desc su clients_sort -->
+                <th scope="col">
+                    <a th:with="
+                           isDesc=${param.clients_sort != null and #strings.contains(param.clients_sort,'surname,desc')},
+                           isAsc=${param.clients_sort != null and #strings.contains(param.clients_sort,'surname,asc')},
+                           nextDir=${isDesc} ? 'asc' : 'desc'"
+                       th:href="@{/buildings/{buildingId}(
+                                 buildingId=${building.id},
+                                 clients_page=${0},
+                                 clients_size=${clientsPage.size},
+                                 clients_sort=${'surname,'+nextDir}
+                               )}">
+                        Cognome
+                    </a>
+                </th>
+
+                <th>Email</th>
+                <th>Data di Nascita</th>
+                <th>Numero di Cellulare</th>
+                <th>Azioni</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="c : ${clients}">
+                <td th:text="${c.id}">10</td>
+                <td th:text="${c.name}">Mario</td>
+                <td th:text="${c.surname}">Rossi</td>
+                <td th:text="${c.email}">mario.rossi@example.com</td>
+                <td th:text="${c.birthDate}">12/12/2012</td>
+                <td th:text="${c.cellphone}">+3780544434</td>
+                <td class="actions-cell">
+                    <form th:action="@{/buildings/{buildingId}/clients/{clientId}/delete(buildingId=${building.id}, clientId=${c.id})}"
+                          method="post" class="actions-item"
+                          onsubmit="return confirm('Eliminare questo cliente?');">
+                        <button type="submit">Elimina Cliente</button>
+                    </form>
+
+                    <button type="button" class="actions-item"
+                            th:onclick="|location.href='@{/buildings/{buildingId}/clients/{clientId}/edit(buildingId=${building.id}, clientId=${c.id})}'|">
+                        Modifica Cliente
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- (Opzionale) Paginazione semplice per i clienti -->
+        <nav aria-label="Paginazione Clienti" class="pager">
+            <div class="pager-compact">
+                <!-- Precedente -->
+                <a th:if="${clientsPage.hasPrevious()}"
+                   th:href="@{/buildings/{buildingId}(
+                        buildingId=${building.id},
+                        clients_page=${clientsPage.number-1},
+                        clients_size=${clientsPage.size},
+                        clients_sort=${param.clients_sort} ?: 'name,desc'
+                    )}">❮</a>
+                <span th:unless="${clientsPage.hasPrevious()}" class="disabled">❮</span>
+
+                <!-- Pagina Attuale -->
+                <a th:text="${clientsPage.number+1}">1</a>
+
+                <!-- Successiva -->
+                <a th:if="${clientsPage.hasNext()}"
+                   th:href="@{/buildings/{buildingId}(
+                        buildingId=${building.id},
+                        clients_page=${clientsPage.number+1},
+                        clients_size=${clientsPage.size},
+                        clients_sort=${param.clients_sort} ?: 'name,desc'
+                    )}">❯</a>
+                <span th:unless="${clientsPage.hasNext()}" class="disabled">❯</span>
+            </div>
+        </nav>
+
+    </div>
+
+    <button type="button"
+            th:onclick="|location.href='@{/buildings/{buildingId}/clients/add(buildingId=${building.id})}'|">
+        Aggiungi Cliente
+    </button>
+</section>
+
 
 
 <hr/>

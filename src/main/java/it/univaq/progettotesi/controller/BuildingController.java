@@ -9,6 +9,7 @@ import it.univaq.progettotesi.service.BuildingConfigService;
 import it.univaq.progettotesi.service.BuildingService;
 import it.univaq.progettotesi.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -73,30 +74,45 @@ public class BuildingController {
     }
 
     @GetMapping("/{buildingId}")
-    public String buildingDetails(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
-                                  @PageableDefault(size = 5, sort = "commProtocol", direction = Sort.Direction.ASC) Pageable pageable) {
+    public String buildingDetails(@PathVariable Long buildingId,
+                                  Model model,
+                                  @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
+                                  @Qualifier("assets")
+                                  @PageableDefault(size = 5, sort = "commProtocol", direction = Sort.Direction.ASC)
+                                  Pageable pageable,
+
+                                  @Qualifier("clients")
+                                  @PageableDefault(size = 5, sort = "name", direction = Sort.Direction.DESC)
+                                  Pageable clientsPageable
+    ) {
         var u = userService.findAdminByEmail(user.getUsername()).orElseThrow();
-        if(buildingService.findById(buildingId).isEmpty()) {
+
+        if (buildingService.findById(buildingId).isEmpty()) {
             model.addAttribute("searchError", "L'edifico con id: " + buildingId + " non esiste");
             return "redirect:/buildings/";
         }
+
         Building building = buildingService.findById(buildingId).orElseThrow();
-        if(!u.getId().equals(building.getAdmin().getId())){
+
+        if (!u.getId().equals(building.getAdmin().getId())) {
             model.addAttribute("permissionError", "Non sei il proprietario di questo edificio");
             return "redirect:/buildings/";
         }
-        Page<Asset> page = assetService.findByBuildingId(buildingId, pageable);
-        List<Client> clients = building.getClients();
-        clients.sort(
-                Comparator.comparing(Client::getName)
-                        .thenComparing(Client::getSurname)
-        );
+
+        Page<Asset> pageAssets = assetService.findByBuildingId(buildingId, pageable);
+        Page<Client> pageClients = userService.findByBuildingId(buildingId, clientsPageable);
+
         model.addAttribute("building", building);
-        model.addAttribute("page", page);
-        model.addAttribute("clients", clients);
-        model.addAttribute("assets", page.getContent());
+        model.addAttribute("page", pageAssets);
+        model.addAttribute("assets", pageAssets.getContent());
+
+
+        model.addAttribute("clientsPage", pageClients);
+        model.addAttribute("clients", pageClients.getContent());
+
         return "buildings/details";
     }
+
 
     @GetMapping("/{buildingId}/config")
     public String show(@PathVariable long buildingId, Model model) {

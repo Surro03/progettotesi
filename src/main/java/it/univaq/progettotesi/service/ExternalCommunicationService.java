@@ -30,7 +30,7 @@ public class ExternalCommunicationService {
     private String apiPassword;
 
     // Iniezione del WebClient
-    public ExternalCommunicationService(WebClient webClient,  DefaultAppProperties defaultAppProperties, ObjectMapper objectMapper) {
+    public ExternalCommunicationService(WebClient webClient, ObjectMapper objectMapper) {
         this.webClient = webClient;
         this.objectMapper = objectMapper;
     }
@@ -39,12 +39,9 @@ public class ExternalCommunicationService {
         webClient.post()
                 .uri("/auth/register")
                 .body(Mono.just(email), String.class);
-
     }
 
-    /**
-     * Esegue il login all'API esterna e restituisce il token di autenticazione.
-     */
+    //Esegue il login all'API esterna e restituisce il token di autenticazione.
     private String getToken() {
         System.out.println("Richiesta di un nuovo token di autenticazione...");
 

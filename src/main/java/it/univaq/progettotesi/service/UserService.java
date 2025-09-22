@@ -8,6 +8,8 @@ import it.univaq.progettotesi.entity.User;
 import it.univaq.progettotesi.mapper.UserMapper;
 import it.univaq.progettotesi.repository.AdminRepository;
 import it.univaq.progettotesi.repository.ClientRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -107,6 +109,10 @@ public class UserService {
 
     public Optional<Client> findClientByEmail(String email) {
         return ClientRepository.findByEmail(email);
+    }
+
+    public Page<Client> findByBuildingId(Long buildingId, Pageable pageable) {
+        return ClientRepository.findByBuildingId(buildingId, pageable);
     }
 
     public Client createClient(String name, String surname, String email, String password,  Building building,  LocalDate birthDate, String cellphone) {
