@@ -1,11 +1,9 @@
 package it.univaq.progettotesi.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.univaq.progettotesi.config.DefaultAppProperties;
 import it.univaq.progettotesi.dto.LoginRequestDTO;
 import it.univaq.progettotesi.dto.LoginResponseDTO;
 import it.univaq.progettotesi.dto.UserDTO;
-import org.apache.juli.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,7 +64,7 @@ public class ExternalCommunicationService {
         return response.token();
     }
 
-    public void sendUserDTO(UserDTO user) {
+    public void saveUserDTO(UserDTO user) {
         System.out.println("Invio dati all'altro sistema...");
         try {
             // --- ECCO IL LOG ---
@@ -87,11 +85,41 @@ public class ExternalCommunicationService {
                 .uri("/api/userdata/save") // <-- L'endpoint specifico dell'altro server
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
-                .body(Mono.just(user), UserDTO.class)
+                .bodyValue(user)
                 .retrieve() // Esegui la richiesta
-                .bodyToMono(String.class) // Aspettati una risposta di tipo String
-                .block(); // .block() attende la fine della chiamata (usalo se la tua app non è reattiva)
+                .bodyToMono(String.class) // Mi aspetto una risposta di tipo String
+                .block(); // .block() attende la fine della chiamata
 
         System.out.println("Dati inviati con successo!");
     }
+
+    public void updateUserDTO(UserDTO user, String oldUsername) {
+        System.out.println("Invio dati all'altro sistema...");
+        try {
+            // --- ECCO IL LOG ---
+            // Converte l'oggetto DTO in una stringa JSON formattata (pretty print)
+
+            String jsonBody = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(user);
+            log.info("Invio del seguente JSON all'API esterna:\n{}", jsonBody);
+            // ------------------
+
+        } catch (Exception e) {
+            log.error("Errore durante la conversione del DTO in JSON", e);
+        }
+
+        String authToken = getToken();
+
+        // Esegui la chiamata PUT
+        webClient.put()
+                .uri("/api/userdata/update/{username}", oldUsername) // <-- L'endpoint specifico dell'altro server
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
+                .bodyValue(user)
+                .retrieve() // Esegui la richiesta
+                .bodyToMono(String.class) // Aspettati una risposta di tipo String
+                .block(); // .block() attende la fine della chiamata
+
+        System.out.println("Dati inviati con successo!");
+    }
+
 }

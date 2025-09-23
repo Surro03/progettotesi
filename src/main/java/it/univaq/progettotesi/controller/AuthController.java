@@ -32,7 +32,7 @@ public class AuthController {
 
     @GetMapping("/register")
     public String registerForm(Model model) {
-        model.addAttribute("registerForm", new RegisterForm("", "","", "",null, ""));
+        model.addAttribute("objectForm", new RegisterForm("", "","", "",null, ""));
         return "register";
     }
 

@@ -214,8 +214,9 @@ public class BuildingController {
 
     @GetMapping("/{buildingId}/clients/add")
     public String clientForm(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal User user) {
-        model.addAttribute("registerForm", new RegisterForm("","","","", null, ""));
+        model.addAttribute("objectForm", new RegisterForm("","","","", null, ""));
         model.addAttribute("buildingId", buildingId );
+        model.addAttribute("edit", false);
         model.addAttribute("client", true);
         return "user/form";
     }
@@ -225,6 +226,7 @@ public class BuildingController {
         if(result.hasErrors()){
             model.addAttribute("formError", result.getFieldError().getDefaultMessage());
             model.addAttribute("buildingId", buildingId );
+            model.addAttribute("edit", false);
             model.addAttribute("client", true);
             return "user/form";
         }
@@ -240,7 +242,7 @@ public class BuildingController {
     @GetMapping("/{buildingId}/clients/{clientId}/edit")
     public String clientFormEdit(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user, @PathVariable Long clientId) {
         Client client = userService.findClientById(clientId).orElseThrow();
-        model.addAttribute("registerForm", new RegisterForm(client.getName(), client.getSurname(), client.getEmail(), "", client.getBirthDate(), client.getCellphone()));
+        model.addAttribute("objectForm", new RegisterForm(client.getName(), client.getSurname(), client.getEmail(), "", client.getBirthDate(), client.getCellphone()));
         model.addAttribute("buildingId", buildingId );
         model.addAttribute("clientId", clientId );
         model.addAttribute("client", true);

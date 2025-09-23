@@ -4,7 +4,6 @@ import it.univaq.progettotesi.dto.UserDTO;
 import it.univaq.progettotesi.entity.Admin;
 import it.univaq.progettotesi.entity.Building;
 import it.univaq.progettotesi.entity.Client;
-import it.univaq.progettotesi.entity.User;
 import it.univaq.progettotesi.mapper.UserMapper;
 import it.univaq.progettotesi.repository.AdminRepository;
 import it.univaq.progettotesi.repository.ClientRepository;
@@ -13,10 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,17 +56,7 @@ public class UserService {
 
         Admin b = new Admin(name, surname, email, password, birthDate, cellphone);
 
-        UserDTO dto = userMapper.createUserDTO(b);
-
-        try {
-            System.out.println("Tentativo di invio DTO...");
-            ecs.sendUserDTO(dto);
-            System.out.println("Invio DTO completato.");
-        } catch (Exception e) {
-            // Se si verifica un errore, il codice entrerà qui
-            System.err.println("!!! ERRORE DURANTE L'INVIO DEL DTO !!!");
-            e.printStackTrace(); // <-- QUESTO STAMPERÀ L'ERRORE ESATTO NELLA CONSOLE!
-        }
+        sendUserDTO(userMapper.createUserDTO(b));
 
         System.out.println("Tentativo di salvataggio Admin...");
         b.setPassword(passwordEncoder.encode(password));
@@ -79,16 +66,38 @@ public class UserService {
         return savedAdmin;
     }
 
+    private void sendUserDTO(UserDTO userDTO) {
+        try {
+            System.out.println("Tentativo di invio DTO...");
+            ecs.saveUserDTO(userDTO);
+            System.out.println("Invio DTO completato.");
+        } catch (Exception e) {
+            // Se si verifica un errore, il codice entrerà qui
+            System.err.println("!!! ERRORE DURANTE L'INVIO DEL DTO !!!");
+            e.printStackTrace(); // <-- QUESTO STAMPERÀ L'ERRORE ESATTO NELLA CONSOLE!
+        }
+    }
+
     public Admin saveAdmin(Admin admin) {
         return AdminRepository.save(admin);
     }
 
-    public Admin updateAdmin(Long id, String name, String surname) {
-        Admin b = AdminRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User non trovato: " + id));
-        b.setName(name);
-        b.setSurname(surname);
-        return AdminRepository.save(b);
+    public Admin updateAdmin(Admin admin, String oldUsername, String newPassword) {
+        UserDTO userDTO = userMapper.createUserDTO(admin);
+        userDTO.setPassword(newPassword);
+        try {
+            System.out.println("Tentativo di invio DTO...");
+            ecs.updateUserDTO(userDTO, oldUsername);
+            System.out.println("Invio DTO completato.");
+        } catch (Exception e) {
+            // Se si verifica un errore, il codice entrerà qui
+            System.err.println("!!! ERRORE DURANTE L'INVIO DEL DTO !!!");
+            e.printStackTrace(); // <-- QUESTO STAMPERÀ L'ERRORE ESATTO NELLA CONSOLE!
+        }
+        System.out.println("Tentativo di salvataggio Admin...");
+        Admin updatedAdmin = AdminRepository.save(admin); // sposto la chiamata fuori dal return per chiarezza
+        System.out.println("Salvataggio Admin completato.");
+        return updatedAdmin;
     }
 
     public void deleteAdmin(Long id) {
@@ -118,22 +127,12 @@ public class UserService {
     public Client createClient(String name, String surname, String email, String password,  Building building,  LocalDate birthDate, String cellphone) {
         Client c = new Client(name, surname, email, password, building, birthDate, cellphone);
 
-        UserDTO dto = userMapper.createUserDTO(c);
+        sendUserDTO(userMapper.createUserDTO(c));
 
-        try {
-            System.out.println("Tentativo di invio DTO...");
-            ecs.sendUserDTO(dto);
-            System.out.println("Invio DTO completato.");
-        } catch (Exception e) {
-            // Se si verifica un errore, il codice entrerà qui
-            System.err.println("!!! ERRORE DURANTE L'INVIO DEL DTO !!!");
-            e.printStackTrace(); // <-- QUESTO STAMPERÀ L'ERRORE ESATTO NELLA CONSOLE!
-        }
-
-        System.out.println("Tentativo di salvataggio Admin...");
+        System.out.println("Tentativo di salvataggio Cliente...");
         c.setPassword(passwordEncoder.encode(password));
         Client savedClient = ClientRepository.save(c); // sposto la chiamata fuori dal return per chiarezza
-        System.out.println("Salvataggio Admin completato.");
+        System.out.println("Salvataggio Cliente completato.");
 
         return savedClient;
     }
