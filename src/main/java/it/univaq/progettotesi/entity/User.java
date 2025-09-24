@@ -35,7 +35,7 @@ public abstract class User {
 
     @Getter
     @Setter
-    @Column(nullable = false)
+    @Column(unique = true, length = 100)
     private String username;
 
     @Getter
@@ -71,7 +71,7 @@ public abstract class User {
         this.role = role;
         this.birthDate = birthDate;
         this.cellphone = cellphone;
-        this.username = name+surname;
+
     }
 
 

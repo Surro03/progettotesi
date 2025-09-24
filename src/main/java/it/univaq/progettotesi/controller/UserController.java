@@ -106,7 +106,7 @@ public class UserController {
 
         u.setName(form.name());
         u.setSurname(form.surname());
-        u.setUsername(form.name() + form.surname()); // valuta eventuale normalizzazione/uniqueness
+        u.setUsername(form.name() + form.surname() + u.getId());
 
         //Cambio email con controllo duplicati
         if (!form.email().equalsIgnoreCase(u.getEmail())) {

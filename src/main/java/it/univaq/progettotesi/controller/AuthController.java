@@ -47,6 +47,7 @@ public class AuthController {
             return "register";
         }
         Admin u = service.createAdmin(form.name(), form.surname(), form.email(), form.password(), form.birthDate(), form.cellphone());
+
         model.addAttribute("email", form.email());
         return "redirect:/login?register=true";
     }

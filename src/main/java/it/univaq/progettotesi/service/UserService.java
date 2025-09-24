@@ -55,13 +55,16 @@ public class UserService {
     public Admin createAdmin(String name, String surname, String email, String password, LocalDate birthDate, String cellphone) {
 
         Admin b = new Admin(name, surname, email, password, birthDate, cellphone);
-
-        sendUserDTO(userMapper.createUserDTO(b));
-
         System.out.println("Tentativo di salvataggio Admin...");
         b.setPassword(passwordEncoder.encode(password));
         Admin savedAdmin = AdminRepository.save(b); // sposto la chiamata fuori dal return per chiarezza
+        savedAdmin.setUsername(name +  surname + savedAdmin.getId());
+        AdminRepository.save(b);
+        UserDTO userDTO = userMapper.createUserDTO(b);
+        userDTO.setPassword(password);
         System.out.println("Salvataggio Admin completato.");
+
+        sendUserDTO(userDTO);//Si occupa di mandare il DTO
 
         return savedAdmin;
     }
@@ -126,13 +129,15 @@ public class UserService {
 
     public Client createClient(String name, String surname, String email, String password,  Building building,  LocalDate birthDate, String cellphone) {
         Client c = new Client(name, surname, email, password, building, birthDate, cellphone);
-
-        sendUserDTO(userMapper.createUserDTO(c));
-
         System.out.println("Tentativo di salvataggio Cliente...");
         c.setPassword(passwordEncoder.encode(password));
         Client savedClient = ClientRepository.save(c); // sposto la chiamata fuori dal return per chiarezza
+        savedClient.setUsername(name +  surname + savedClient.getId());
+        ClientRepository.save(c);
         System.out.println("Salvataggio Cliente completato.");
+        UserDTO userDTO = userMapper.createUserDTO(c);
+        userDTO.setPassword(password);
+        sendUserDTO(userDTO);
 
         return savedClient;
     }
