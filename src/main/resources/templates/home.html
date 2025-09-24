@@ -3,25 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
+    <link rel="stylesheet" th:href="@{/css/prova.css}" />
 </head>
 
 <body>
-<p>
+<p class="welcome-box" style="font-size: 5rem">
     <span th:text="#{msg.welcome}"></span>
     <span th:text="${user.getName()}"></span> <span th:text = "${user.getSurname()}"></span>!
 </p>
 <div>
-    <p>
-        <a th:href="@{/buildings}">I miei edifici</a>
+    <p class="text-home" style="font-size: 3rem">
+        <a class="link" th:href="@{/buildings}">I miei edifici</a>
     </p>
 </div>
-<form th:action="@{/logout}" method="post">
-    <input type="submit" value="Logout"/>
-</form>
+
 <div>
-    <p>
-        <a th:href="@{/user/details}">Visualizza account</a>
+    <p class="text-home" style="font-size: 3rem">
+        <a class="link" th:href="@{/user/details}">Visualizza account</a>
     </p>
 </div>
+
+<form class="text-home" th:action="@{/logout}" method="post" >
+    <input class="btn btn-primary" type="submit" value="Logout" style="font-size: 2rem"/>
+</form>
+
 </body>
 </html>
