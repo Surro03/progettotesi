@@ -56,7 +56,7 @@ public class BuildingController {
 
     @GetMapping("/new")
     public String buildingForm(Model model){
-        model.addAttribute("buildingForm", new BuildingForm("", ""));
+        model.addAttribute("buildingForm", new BuildingForm("", "","", null,  null, null, null, null, null));
         model.addAttribute("edit", false);
         return "buildings/form";
     }
@@ -124,7 +124,7 @@ public class BuildingController {
     public String editBuilding(@PathVariable Long buildingId, Model model) {
         Building building = buildingService.findById(buildingId).orElseThrow();
         model.addAttribute("buildingId", building.getId());
-        model.addAttribute("buildingForm", new BuildingForm(building.getName(),building.getAddress()));
+        model.addAttribute("buildingForm", new BuildingForm(building.getName(),building.getAddress(), building.getEnergeticClass(), building.getApartments(), building.getYearOfConstruction(), building.getNumbersOfFloors(), building.getSurface(), building.getLatitude(), building.getLongitude()));
         model.addAttribute("edit", true);
         return "buildings/form";
     }

@@ -49,7 +49,19 @@ class LoadDatabase {
             log.info("Preloaded admin: {}", admin.getEmail());
 
             // 2) Building
-            Building building = new Building(admin, "Cinque", "Via Cervaro 15");
+            Building building = new Building();
+
+            building.setAdmin(admin);
+            building.setName("Condominio Paradiso");
+            building.setAddress("Via Garibaldi, 27, 20121 Milano, MI, Italia");
+            building.setEnergeticClass("A2");
+            building.setApartments(16);
+            building.setYearOfConstruction(1998);
+            building.setNumbersOfFloors(4);
+            building.setSurface(1850.5); // Superficie in mq
+            building.setLatitude(45.4698);   // Coordinate reali per l'indirizzo
+            building.setLongitude(9.1813);    // Coordinate reali per l'indirizzo
+            ;
             building = buildingRepo.save(building);
             log.info("Preloaded building: {} (owner: {})", building.getName(), admin.getEmail());
 
