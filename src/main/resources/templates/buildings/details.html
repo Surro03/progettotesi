@@ -14,6 +14,10 @@
     <p><strong>Nome:</strong> <span th:text="${building.name}">Edificio A</span></p>
     <p><strong>Indirizzo:</strong> <span th:text="${building.address}">Via Roma 1</span></p>
     <p><strong>Email Admin:</strong> <span th:text="${building.admin.email}">mario.rossi@email.com</span></p>
+    <p><strong>Classe Energetica:</strong> <span th:text="${building.getEnergeticClass}">A2</span></p>
+    <p><strong>Unità Abitative:</strong> <span th:text="${building.getApartments}">1</span></p>
+    <p><strong>Anno di Costruzione: </strong> <span th:text="${building.yearOfConstruction}">1890</span></p>
+    <p><strong>Numero di piani:</strong> <span th:text="${building.numbersOfFloors}">3</span></p>
     <p><a th:href="@{|/buildings/${buildingId}/edit|}">Modifica</a></p>
 </section>
 
@@ -30,46 +34,47 @@
     <h2>Asset dell'edificio</h2>
 
     <!-- Messaggio se la lista è vuota -->
-    <div th:if="${page.totalElements == 0}">
+    <div th:if="${assetsPage.totalElements == 0}">
         Non ci sono asset presenti nell'edificio
     </div>
     <!-- Tabella asset se presenti -->
-    <div th:if="${page.totalElements > 0}">
-        <p><strong>Totale:</strong> <span th:text="${assets.size()}">0</span></p>
+    <div th:if="${assetsPage.totalElements > 0}">
+
+        <p><strong>Totale:</strong> <span th:text="${assetsPage.totalElements}">0</span></p>
+
         <table id="assetTable">
             <thead>
             <tr>
                 <th>ID</th>
                 <th scope="col">
-                    <a th:with="isDesc=${param.sort != null and #strings.contains(param.sort,'name,desc')},
-                     nextDir=${isDesc} ? 'asc' : 'desc'"
-                       th:href="@{/buildings/{buildingId}(buildingId=${building.id}, page=0, size=${page.size}, sort=${'name,'+nextDir})}">
+                    <a th:with="isDesc=${param.assets_sort != null and #strings.contains(param.assets_sort,'name,desc')},
+                             nextDir=${isDesc ? 'asc' : 'desc'}"
+                       th:href="@{/buildings/{buildingId}(buildingId=${building.id}, assets_sort='name,'+${nextDir})}">
                         Nome
                     </a>
                 </th>
                 <th scope="col">
-                    <a th:with="isDesc=${param.sort != null and #strings.contains(param.sort,'brand,desc')},
-                     nextDir=${isDesc} ? 'asc' : 'desc'"
-                       th:href="@{/buildings/{buildingId}(buildingId=${building.id}, page=0, size=${page.size}, sort=${'brand,'+nextDir})}">
+                    <a th:with="isDesc=${param.assets_sort != null and #strings.contains(param.assets_sort,'brand,desc')},
+                             nextDir=${isDesc ? 'asc' : 'desc'}"
+                       th:href="@{/buildings/{buildingId}(buildingId=${building.id}, assets_sort='brand,'+${nextDir})}">
                         Marca
                     </a>
                 </th>
                 <th>Tipo</th>
                 <th>Modello</th>
                 <th scope="col">
-                    <a th:with="isDesc=${param.sort != null and #strings.contains(param.sort,'commProtocol,desc')},
-                     nextDir=${isDesc} ? 'asc' : 'desc'"
-                       th:href="@{/buildings/{buildingId}(buildingId=${building.id}, page=0, size=${page.size}, sort=${'commProtocol,'+nextDir})}">
+                    <a th:with="isDesc=${param.assets_sort != null and #strings.contains(param.assets_sort,'commProtocol,desc')},
+                             nextDir=${isDesc ? 'asc' : 'desc'}"
+                       th:href="@{/buildings/{buildingId}(buildingId=${building.id}, assets_sort='commProtocol,'+${nextDir})}">
                         Protocollo di comunicazione
                     </a>
                 </th>
                 <th>Endpoint</th>
                 <th>Azioni</th>
             </tr>
-
             </thead>
             <tbody>
-            <tr th:each="a : ${assets}">
+            <tr th:each="a : ${assetsPage}">
                 <td th:text="${a.id}">10</td>
                 <td th:text="${a.name}">Inverter 1</td>
                 <td th:text="${a.brand}">BrandX</td>
@@ -86,36 +91,30 @@
                         Modifica Asset
                     </button>
                 </td>
-
             </tr>
-
             </tbody>
-
         </table>
 
         <nav aria-label="Paginazione" class="pager">
             <div class="pager-compact">
-                <!-- Precedente -->
-                <a th:if="${page.hasPrevious()}"
-                   th:href="@{/buildings/{buildingId}(buildingId=${building.id}, page=${page.number-1}, size=${page.size}, sort=${param.sort} ?: 'commProtocol,asc')}">❮</a>
-                <span th:unless="${page.hasPrevious()}" class="disabled">❮</span>
+                <a th:if="${assetsPage.hasPrevious()}"
+                   th:href="@{/buildings/{buildingId}(buildingId=${building.id}, assets_page=${assetsPage.number-1}, assets_size=${assetsPage.size}, assets_sort=${param.assets_sort})}">❮</a>
+                <span th:unless="${assetsPage.hasPrevious()}" class="disabled">❮</span>
 
-                <!-- Pagina Attuale -->
-                <a th:text="${page.number+1}">1</a>
+                <a th:text="${assetsPage.number+1}">1</a>
 
-                <!-- Successiva -->
-                <a th:if="${page.hasNext()}"
-                   th:href="@{/buildings/{buildingId}(buildingId=${building.id}, page=${page.number+1}, size=${page.size}, sort=${param.sort} ?: 'commProtocol,asc')}">❯</a>
-                <span th:unless="${page.hasNext()}" class="disabled">❯</span>
+                <a th:if="${assetsPage.hasNext()}"
+                   th:href="@{/buildings/{buildingId}(buildingId=${building.id}, assets_page=${assetsPage.number+1}, assets_size=${assetsPage.size}, assets_sort=${param.assets_sort})}">❯</a>
+                <span th:unless="${assetsPage.hasNext()}" class="disabled">❯</span>
             </div>
         </nav>
 
         <span class="pager-info">
-          Stai vedendo i risultati dall'
-          <strong th:text="${page.totalElements == 0 ? 0 : page.number*page.size + 1}">1</strong> al
-          <strong th:text="${ ((page.number+1)*page.size) > page.totalElements ? page.totalElements : ((page.number+1)*page.size) }">1</strong>
-          di totale <strong th:text="${page.totalElements}">0</strong> <span th:text="${page.totalElements} == 1  ? 'risultato' : 'risultati'">risultato</span>
-        </span>
+      Stai vedendo i risultati dall'
+      <strong th:text="${assetsPage.number * assetsPage.size + 1}">1</strong> al
+      <strong th:text="${(assetsPage.number + 1) * assetsPage.size > assetsPage.totalElements ? assetsPage.totalElements : (assetsPage.number + 1) * assetsPage.size}">1</strong>
+      di totale <strong th:text="${assetsPage.totalElements}">0</strong> <span th:text="${assetsPage.totalElements == 1 ? 'risultato' : 'risultati'}">risultati</span>
+    </span>
 
     </div>
     <button type="button"

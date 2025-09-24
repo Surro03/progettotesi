@@ -21,9 +21,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Comparator;
-import java.util.List;
-
 @Controller
 @RequestMapping("/buildings")
 public class BuildingController {
@@ -77,9 +74,10 @@ public class BuildingController {
     public String buildingDetails(@PathVariable Long buildingId,
                                   Model model,
                                   @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
+
                                   @Qualifier("assets")
                                   @PageableDefault(size = 5, sort = "commProtocol", direction = Sort.Direction.ASC)
-                                  Pageable pageable,
+                                  Pageable assetsPageable,
 
                                   @Qualifier("clients")
                                   @PageableDefault(size = 5, sort = "name", direction = Sort.Direction.DESC)
@@ -99,11 +97,11 @@ public class BuildingController {
             return "redirect:/buildings/";
         }
 
-        Page<Asset> pageAssets = assetService.findByBuildingId(buildingId, pageable);
+        Page<Asset> pageAssets = assetService.findByBuildingId(buildingId, assetsPageable);
         Page<Client> pageClients = userService.findByBuildingId(buildingId, clientsPageable);
 
         model.addAttribute("building", building);
-        model.addAttribute("page", pageAssets);
+        model.addAttribute("assetsPage", pageAssets);
         model.addAttribute("assets", pageAssets.getContent());
 
 
