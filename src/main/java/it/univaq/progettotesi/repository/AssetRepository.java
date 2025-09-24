@@ -16,5 +16,6 @@ public interface AssetRepository extends JpaRepository<Asset, Long>{
     Page<Asset> findByBuilding_Id(Long buildingId, Pageable pageable);
     Boolean existsByNameAndBuildingId(String name, Long buildingId);
     Optional<Asset> findByBuilding_IdAndId(Long buildingId, Long assetId);
+    void deleteByBuilding_Id(Long buildingId);
 
 }

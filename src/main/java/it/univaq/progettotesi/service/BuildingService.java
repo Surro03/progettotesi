@@ -4,6 +4,8 @@ import it.univaq.progettotesi.entity.Admin;
 import it.univaq.progettotesi.entity.Building;
 import it.univaq.progettotesi.entity.Client;
 import it.univaq.progettotesi.entity.User;
+import it.univaq.progettotesi.repository.AssetRepository;
+import it.univaq.progettotesi.repository.BuildingConfigRepository;
 import it.univaq.progettotesi.repository.BuildingRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,9 +19,13 @@ import java.util.Optional;
 @Transactional
 public class BuildingService {
     private final BuildingRepository buildingRepository;
+    private final BuildingConfigRepository buildingConfigRepository;
+    private final AssetRepository assetRepository;
 
-    public BuildingService(BuildingRepository buildingRepository) {
+    public BuildingService(BuildingRepository buildingRepository, AssetRepository assetRepository,  BuildingConfigRepository buildingConfigRepository) {
         this.buildingRepository = buildingRepository;
+        this.assetRepository = assetRepository;
+        this.buildingConfigRepository = buildingConfigRepository;
     }
 
     public List<Building> findAll() {
@@ -51,7 +57,10 @@ public class BuildingService {
         return buildingRepository.save(b);
     }
 
+    @Transactional
     public void delete(Long id) {
+        assetRepository.deleteByBuilding_Id(id);
+        buildingConfigRepository.deleteByBuilding_Id(id);
         buildingRepository.deleteById(id);
     }
 }
