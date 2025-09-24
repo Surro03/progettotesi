@@ -156,7 +156,24 @@ public class UserService {
         c.setBuilding(building);
         c.setBirthDate(birthDate);
         c.setCellphone(cellphone);
-        return ClientRepository.save(c);
+        String oldUsername = c.getUsername();
+        c.setUsername(name +  surname + c.getId());
+        UserDTO userDTO = userMapper.createUserDTO(c);
+        userDTO.setPassword(password);
+        try {
+            System.out.println("Tentativo di invio DTO...");
+            ecs.updateUserDTO(userDTO, oldUsername);
+            System.out.println("Invio DTO completato.");
+        } catch (Exception e) {
+            // Se si verifica un errore, il codice entrerà qui
+            System.err.println("!!! ERRORE DURANTE L'INVIO DEL DTO !!!");
+            e.printStackTrace(); // <-- QUESTO STAMPERÀ L'ERRORE ESATTO NELLA CONSOLE!
+        }
+        System.out.println("Tentativo di salvataggio Admin...");
+        Client updatedClient = ClientRepository.save(c);
+        System.out.println("Salvataggio Admin completato.");
+        return updatedClient;
+
     }
 
     public void deleteClient(Long id) {
