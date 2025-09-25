@@ -3,25 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <title>Dettagli account</title>
+    <link rel="stylesheet" th:href="@{/css/prova.css}" />
 </head>
 <body>
-<h1>Dettagli Account</h1>
+<header class="topbar">
+    <div class="brand">
+        <span class="logo">BIM</span>
+        <span>Account</span>
+    </div>
+    <nav class="topnav">
+        <a th:href="@{/home}">Home</a>
+        <a th:href="@{/buildings}">Edifici</a>
+        <a th:href="@{/user/details}">Profilo</a>
+        <form th:action="@{/logout}" method="post" style="display:inline;">
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+    </nav>
+</header>
+<h1 style="text-align: center">Dettagli Account</h1>
 
 <div th:if="${edit}">
     Profilo modificato con successo
 </div>
 
-<section>
-    <p><strong>Nome:</strong> <span th:text="${user.name}">1</span></p>
-    <p><strong>Cognome:</strong> <span th:text="${user.surname}">Edificio A</span></p>
-    <p><strong>Email:</strong> <span th:text="${user.email}">Via Roma 1</span></p>
-    <p><strong>Data di Nascita:</strong> <span th:text="${user.birthDate}">09/09/2009</span></p>
-    <p><strong>Numero di Cellulare:</strong> <span th:text="${user.cellphone}">+3594519837</span></p>
-    <p><a th:href="@{|/user/edit|}">Modifica</a></p>
+<section class="card">
+    <section class="details">
+        <div class="detail-row">
+            <span class="label">Nome:</span>
+            <span class="value" th:text="${user.name}">1</span>
+        </div>
+
+        <div class="detail-row">
+            <span class="label">Cognome:</span>
+            <span class="value" th:text="${user.surname}">Edificio A</span>
+        </div>
+
+        <div class="detail-row">
+            <span class="label">Email:</span>
+            <span class="value" th:text="${user.email}">Via Roma 1</span>
+        </div>
+
+        <div class="detail-row">
+            <span class="label">Data di Nascita:</span>
+            <span class="value" th:text="${user.birthDate}">09/09/2009</span>
+        </div>
+
+        <div class="detail-row">
+            <span class="label">Numero di Cellulare:</span>
+            <span class="value" th:text="${user.cellphone}">+3594519837</span>
+        </div>
+
+        <div class="detail-row">
+            <a class="link" th:href="@{|/user/edit|}">Modifica</a>
+        </div>
+    </section>
 </section>
-<button type="button" th:onclick="|location.href='@{/home}'|">
-    Torna alla home
-</button>
+
 
 <hr/>
 

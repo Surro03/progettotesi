@@ -3,91 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="${client} ? 'Aggiungi Cliente' : 'Modifica Utente'">Form Utente</title>
+    <link rel="stylesheet" th:href="@{/css/prova.css}" />
 </head>
 <body>
+<header class="topbar">
+    <div class="brand">
+        <span class="logo">BIM</span>
+        <span>Account</span>
+    </div>
+    <nav class="topnav">
+        <a th:href="@{/home}">Home</a>
+        <a th:href="@{/buildings}">Edifici</a>
+        <a th:href="@{/user/details}">Profilo</a>
+        <form th:action="@{/logout}" method="post" style="display:inline;">
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+    </nav>
+</header>
+<h1 style="text-align: center">Modifica Account</h1>
 
-<th:block th:with="formAction=${edit}
+<section class="card">
+    <section class="details">
+        <th:block th:with="formAction=${edit}
                      ? @{/buildings/{buildingId}/clients/{clientId}/edit(buildingId=${buildingId}, clientId=${clientId})}
                      : (${client}
                          ? @{/buildings/{buildingId}/clients/add(buildingId=${buildingId})}
                          : @{/user/edit})">
 
-    <form th:action="${formAction}"
-          th:object="${registerForm}"
-          method="post" autocomplete="on">
+            <form th:action="${formAction}"
+                  th:object="${registerForm}"
+                  method="post" autocomplete="on">
 
 
-        <table>
-            <tr>
-                <td><label for="name">Nome:</label></td>
-                <td><input id="name" type="text" th:field="*{name}" autocomplete="given-name"
-                           placeholder="Mario" required autofocus/></td>
-                <td th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Errore nome</td>
-            </tr>
+                <table class="table">
+                    <tr>
+                        <td><label for="name">Nome:</label></td>
+                        <td><input class="input" id="name" type="text" th:field="*{name}" autocomplete="given-name"
+                                   placeholder="Mario" required autofocus/></td>
+                        <td th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Errore nome</td>
+                    </tr>
 
-            <tr>
-                <td><label for="surname">Cognome:</label></td>
-                <td><input id="surname" type="text" th:field="*{surname}" autocomplete="family-name"
-                           placeholder="Rossi" required/></td>
-                <td th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}">Errore cognome</td>
-            </tr>
+                    <tr>
+                        <td><label for="surname">Cognome:</label></td>
+                        <td><input class="input" id="surname" type="text" th:field="*{surname}" autocomplete="family-name"
+                                   placeholder="Rossi" required/></td>
+                        <td th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}">Errore cognome</td>
+                    </tr>
 
-            <tr>
-                <td><label for="email">Email:</label></td>
-                <td><input id="email" type="email" th:field="*{email}" autocomplete="email"
-                           placeholder="mario.rossi@email.com" required/></td>
-                <td th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Errore email</td>
-            </tr>
+                    <tr>
+                        <td><label for="email">Email:</label></td>
+                        <td><input class="input" id="email" type="email" th:field="*{email}" autocomplete="email"
+                                   placeholder="mario.rossi@email.com" required/></td>
+                        <td th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Errore email</td>
+                    </tr>
 
-            <tr>
-                <td><label for="password">Password:</label></td>
-                <td>
-                    <input id="password" type="password" th:field="*{password}" autocomplete="new-password"
-                           th:attr="placeholder=${client} ? 'Inserisci la password' : 'Lascia vuoto per non cambiare',
+                    <tr>
+                        <td><label for="password">Password:</label></td>
+                        <td>
+                            <input class="input" id="password" type="password" th:field="*{password}" autocomplete="new-password"
+                                   th:attr="placeholder=${client} ? 'Inserisci la password' : 'Lascia vuoto per non cambiare',
                                     required=${client}"/>
-                </td>
-                <td th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Errore password</td>
-            </tr>
+                        </td>
+                        <td th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Errore password</td>
+                    </tr>
 
-            <tr>
-                <td><label for="dateOfBirth">Data di nascita:</label></td>
-                <td>
-                    <input id="dateOfBirth" type="date" th:field="*{birthDate}" required
-                            th:attr="max=${#dates.format(#dates.createNow(),'yyyy-MM-dd')}" />
-                </td>
-                <td th:if="${#fields.hasErrors('birthDate')}" th:errors="*{birthDate}">Errore Data</td>
-            </tr>
+                    <tr>
+                        <td><label for="dateOfBirth">Data di nascita:</label></td>
+                        <td>
+                            <input class="input" id="dateOfBirth" type="date" th:field="*{birthDate}" required
+                                   th:attr="max=${#dates.format(#dates.createNow(),'yyyy-MM-dd')}" />
+                        </td>
+                        <td th:if="${#fields.hasErrors('birthDate')}" th:errors="*{birthDate}">Errore Data</td>
+                    </tr>
 
-            <tr>
-                <td><label for="cellphone">Numero di telefono:</label></td>
-                <td>
-                    <input id="cellphone" type="tel" th:field="*{cellphone}" placeholder="+393331234567" required
-                       pattern="^\+?[0-9]{7,15}$"
-                       title="Inserisci un numero valido (7–15 cifre, opzionale + iniziale)"/>
-                </td>
-                <td th:if="${#fields.hasErrors('cellphone')}" th:errors="*{cellphone}">Errore Numero di Cellurare</td>
-            </tr>
+                    <tr>
+                        <td><label for="cellphone">Numero di telefono:</label></td>
+                        <td>
+                            <input class="input" id="cellphone" type="tel" th:field="*{cellphone}" placeholder="+393331234567" required
+                                   pattern="^\+?[0-9]{7,15}$"
+                                   title="Inserisci un numero valido (7–15 cifre, opzionale + iniziale)"/>
+                        </td>
+                        <td th:if="${#fields.hasErrors('cellphone')}" th:errors="*{cellphone}">Errore Numero di Cellurare</td>
+                    </tr>
 
-            <tr>
-                <td colspan="3" th:if="${client} and !${edit}">
-                    <button type="submit">Aggiungi Cliente</button>
-                </td>
-                <td colspan="3" th:if="${edit} and ${client}">
-                    <button type="submit">Modifica Cliente</button>
-                </td>
-                <td colspan="3" th:if="${!client}">
-                    <button type="submit">Modifica Account</button>
-                </td>
-            </tr>
-        </table>
-    </form>
-</th:block>
-
-<a th:href="${client}
+                    <tr>
+                        <td colspan="3" th:if="${client} and !${edit}">
+                            <button type="submit">Aggiungi Cliente</button>
+                        </td>
+                        <td colspan="3" th:if="${edit} and ${client}">
+                            <button type="submit">Modifica Cliente</button>
+                        </td>
+                        <td colspan="3" th:if="${!client}">
+                            <div class="btn-row">
+                                <button class="btn btn-primary" type="submit">Modifica Account</button>
+                                <a  class="link" th:href="${client}
              ? @{/buildings/{buildingId}(buildingId=${buildingId})}
              : @{/user/details}">
-    Annulla
-</a>
+                                    Annulla
+                                </a>
+                            </div>
+
+                        </td>
+                    </tr>
+
+                </table>
+            </form>
+        </th:block>
+    </section>
+</section>
+
+
+
 
 </body>
 </html>

@@ -11,7 +11,7 @@
     --surface: #0b1220; /* cards and panels */
     --muted: #8b98a8; /* secondary text */
     --text: #e6eef8; /* primary text */
-    --accent: #27cde3; /* primary action (sky) */
+    --accent: #1d90a3; /* primary action (sky) */
     --accent-2: #ef86ed; /* success */
     --warning: #ffb020;
     --danger: #ff6b6b;
@@ -35,7 +35,7 @@ body.theme-light{
     --bg: #f6f9fb;
     --surface: #ffffff;
     --muted: #64748b;
-    --text: #0b1720;
+    --text: #14293a;
     --accent: #0ea5e9;
     --accent-2:#16a34a;
     --warning: #b45309;
@@ -124,7 +124,7 @@ body{
 /* forms */
 .form-row{display:flex;gap:12px;align-items:center}
 .input, textarea, select{
-    width:100%;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text);font-size:0.95rem
+    width:75%;padding:10px 12px;border-radius:8px;border:2px solid rgba(255,255,255,0.1);background: #020245;color:var(--text);font-size:0.95rem
 }
 .input:focus, textarea:focus, select:focus{border-color:var(--accent)}
 textarea{min-height:92px;resize:vertical}
@@ -139,15 +139,21 @@ textarea{min-height:92px;resize:vertical}
 .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04)}
 .btn-danger{background:linear-gradient(90deg,var(--danger), #ff4d4d);color:white}
 .btn:active{transform:translateY(1px)}
+.btn-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 
 /* Floating Action Button (FAB) */
 .fab{position:fixed;right:24px;bottom:24px;padding:16px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;box-shadow:var(--elev-2);cursor:pointer}
 .fab.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:rgba(0,0,0,0.85)}
 
 /* Table */
-.table{width:100%;border-collapse:collapse;font-size:0.95rem}
-.table th, .table td{padding:10px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.03)}
-.table th{font-weight:700;color:var(--muted);font-size:0.85rem}
+.table{width:150%;border-collapse:collapse;font-size:0.95rem}
+.table th, .table td{padding:15px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.03)}
+.table th{font-weight:600;color:var(--muted);font-size:0.85rem}
 .table tr:hover td{background:linear-gradient(90deg, rgba(255,255,255,0.01), transparent)}
 .table .status-badge{padding:6px 8px;border-radius:999px;font-weight:700;font-size:0.8rem}
 
@@ -211,6 +217,11 @@ textarea{min-height:92px;resize:vertical}
     text-align: center;
     opacity: 0;
     animation: fadeIn 1s forwards;
+    position: absolute;          /* sopra l'immagine */
+    top: 30%;                    /* verticale centro */
+    left: 50%;                   /* orizzontale centro */
+    transform: translate(-50%, -50%);
+    color: gold;                /* testo visibile sopra lo sfondo */
 }
 
 @keyframes fadeIn {
@@ -236,6 +247,115 @@ textarea{min-height:92px;resize:vertical}
     text-align: center;
     opacity: 0;
     animation: fadeIn 3s forwards;
+}
+
+.hero {
+    position: relative;
+    height: 50vh;
+    background-image: url('https://www.thenbs.com.au/-/media/uk/new-images/by-section/knowledge/knowledge-articles-hero/what-is-environmentally-conscious-building-hero.jpg');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+/*prova per una topbar */
+
+.topbar {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.05), transparent);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(6px); /* effetto vetro */
+    position: sticky; /* resta in alto anche quando scrolli */
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    z-index: 1000; /* resta sopra altri elementi */
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--text);
+}
+
+.logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: rgba(0,0,0,0.8);
+}
+
+.topnav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.topnav a {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.topnav a:hover {
+    color: var(--accent);
+}
+
+.logout-btn {
+    background: transparent;
+    border: none;
+    color: var(--danger);
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.logout-btn:hover {
+    transform: scale(1.1);
+}
+
+
+.details {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 16px;
+    background: var(--surface); /* opzionale: pannello elegante */
+    border-radius: var(--radius);
+    box-shadow: var(--elev-1);
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* linea divisoria */
+}
+
+.detail-row:last-child {
+    border-bottom: none; /* niente linea sull’ultima */
+}
+
+.label {
+    font-weight: 600;
+    color: var(--muted); /* colore secondario */
+}
+
+.value {
+    color: var(--text);
 }
 
 /* End of file */

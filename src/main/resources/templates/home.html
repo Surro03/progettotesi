@@ -7,10 +7,13 @@
 </head>
 
 <body>
-<p class="welcome-box" style="font-size: 5rem">
-    <span th:text="#{msg.welcome}"></span>
-    <span th:text="${user.getName()}"></span> <span th:text = "${user.getSurname()}"></span>!
-</p>
+<div class="hero">
+    <p class="welcome-box" style="font-size: 5rem">
+        <span th:text="#{msg.welcome}"></span>
+        <span th:text="${user.getName()}"></span> <span th:text = "${user.getSurname()}"></span>!
+    </p>
+</div>
+
 <div>
     <p class="text-home" style="font-size: 3rem">
         <a class="link" th:href="@{/buildings}">I miei edifici</a>
