@@ -15,17 +15,52 @@
     <form th:action="${edit} ? @{/buildings/{id}/edit(id=${buildingId})} : @{/buildings/new}" th:object="${buildingForm}" method="post">
         <table>
             <tr>
-                <td><label for="name">Nome:</label> </td>
-                <td><input id = "name" type="text" th:field="*{name}" placeholder="Nome edificio"/></td>
+                <td><label for="name">Nome:</label></td>
+                <td><input id="name" type="text" th:field="*{name}" placeholder="Nome edificio" required/></td>
                 <td th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name Error</td>
             </tr>
             <tr>
                 <td><label for="address">Indirizzo:</label></td>
-                <td><input id="address" type="text" th:field="*{address}" placeholder="Indirizzo edificio"/></td>
+                <td><input id="address" type="text" th:field="*{address}" placeholder="Indirizzo edificio" required/></td>
                 <td th:if="${#fields.hasErrors('address')}" th:errors="*{address}">Address Error</td>
             </tr>
-            <tr>
 
+            <tr>
+                <td><label for="classeEnergetica">Classe Energetica:</label></td>
+                <td><input id="classeEnergetica" type="text" th:field="*{classeEnergetica}" placeholder="Es. A4" required/></td>
+                <td th:if="${#fields.hasErrors('classeEnergetica')}" th:errors="*{classeEnergetica}">Errore Classe Energetica</td>
+            </tr>
+            <tr>
+                <td><label for="unitaAbitative">Unità Abitative:</label></td>
+                <td><input id="unitaAbitative" type="number" th:field="*{unitaAbitative}" placeholder="Es. 10" min="1" required/></td>
+                <td th:if="${#fields.hasErrors('unitaAbitative')}" th:errors="*{unitaAbitative}">Errore Unità Abitative</td>
+            </tr>
+            <tr>
+                <td><label for="annoCostruzione">Anno di Costruzione:</label></td>
+                <td><input id="annoCostruzione" type="number" th:field="*{annoCostruzione}" placeholder="Es. 2005" min="1800" th:max="${#dates.year(#dates.createNow())}" required/></td>
+                <td th:if="${#fields.hasErrors('annoCostruzione')}" th:errors="*{annoCostruzione}">Errore Anno</td>
+            </tr>
+            <tr>
+                <td><label for="numeroPiani">Numero di Piani:</label></td>
+                <td><input id="numeroPiani" type="number" th:field="*{numeroPiani}" placeholder="Es. 3" min="1" required/></td>
+                <td th:if="${#fields.hasErrors('numeroPiani')}" th:errors="*{numeroPiani}">Errore Numero Piani</td>
+            </tr>
+            <tr>
+                <td><label for="superficie">Superficie (mq):</label></td>
+                <td><input id="superficie" type="number" th:field="*{superficie}" placeholder="Es. 1200.5" step="any" min="0.01" required/></td>
+                <td th:if="${#fields.hasErrors('superficie')}" th:errors="*{superficie}">Errore Superficie</td>
+            </tr>
+            <tr>
+                <td><label for="latitudine">Latitudine:</label></td>
+                <td><input id="latitudine" type="number" th:field="*{latitudine}" placeholder="Es. 42.35" step="any" min="-90" max="90" required/></td>
+                <td th:if="${#fields.hasErrors('latitudine')}" th:errors="*{latitudine}">Errore Latitudine</td>
+            </tr>
+            <tr>
+                <td><label for="longitudine">Longitudine:</label></td>
+                <td><input id="longitudine" type="number" th:field="*{longitudine}" placeholder="Es. 13.40" step="any" min="-180" max="180" required/></td>
+                <td th:if="${#fields.hasErrors('longitudine')}" th:errors="*{longitudine}">Errore Longitudine</td>
+            </tr>
+            <tr>
                 <td th:if="!${edit}"><button type="submit">Registra Edificio</button></td>
                 <td th:if="${edit}"><button type="submit">Modifica Edificio</button></td>
                 <td>
@@ -33,8 +68,6 @@
                     <a th:if="${edit}"  th:href="@{/buildings/{buildingId}(buildingId=${buildingId})}">Annulla</a>
                 </td>
             </tr>
-
-
         </table>
 
     </form>

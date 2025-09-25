@@ -21,9 +21,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Comparator;
-import java.util.List;
-
 @Controller
 @RequestMapping("/buildings")
 public class BuildingController {
@@ -56,7 +53,7 @@ public class BuildingController {
 
     @GetMapping("/new")
     public String buildingForm(Model model){
-        model.addAttribute("buildingForm", new BuildingForm("", ""));
+        model.addAttribute("buildingForm", new BuildingForm("", "","", null,  null, null, null, null, null));
         model.addAttribute("edit", false);
         return "buildings/form";
     }
@@ -77,9 +74,10 @@ public class BuildingController {
     public String buildingDetails(@PathVariable Long buildingId,
                                   Model model,
                                   @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
+
                                   @Qualifier("assets")
                                   @PageableDefault(size = 5, sort = "commProtocol", direction = Sort.Direction.ASC)
-                                  Pageable pageable,
+                                  Pageable assetsPageable,
 
                                   @Qualifier("clients")
                                   @PageableDefault(size = 5, sort = "name", direction = Sort.Direction.DESC)
@@ -99,11 +97,11 @@ public class BuildingController {
             return "redirect:/buildings/";
         }
 
-        Page<Asset> pageAssets = assetService.findByBuildingId(buildingId, pageable);
+        Page<Asset> pageAssets = assetService.findByBuildingId(buildingId, assetsPageable);
         Page<Client> pageClients = userService.findByBuildingId(buildingId, clientsPageable);
 
         model.addAttribute("building", building);
-        model.addAttribute("page", pageAssets);
+        model.addAttribute("assetsPage", pageAssets);
         model.addAttribute("assets", pageAssets.getContent());
 
 
@@ -124,7 +122,7 @@ public class BuildingController {
     public String editBuilding(@PathVariable Long buildingId, Model model) {
         Building building = buildingService.findById(buildingId).orElseThrow();
         model.addAttribute("buildingId", building.getId());
-        model.addAttribute("buildingForm", new BuildingForm(building.getName(),building.getAddress()));
+        model.addAttribute("buildingForm", new BuildingForm(building.getName(),building.getAddress(), building.getEnergeticClass(), building.getApartments(), building.getYearOfConstruction(), building.getNumbersOfFloors(), building.getSurface(), building.getLatitude(), building.getLongitude()));
         model.addAttribute("edit", true);
         return "buildings/form";
     }
@@ -214,8 +212,9 @@ public class BuildingController {
 
     @GetMapping("/{buildingId}/clients/add")
     public String clientForm(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal User user) {
-        model.addAttribute("registerForm", new RegisterForm("","","","", null, ""));
+        model.addAttribute("objectForm", new RegisterForm("","","","", null, ""));
         model.addAttribute("buildingId", buildingId );
+        model.addAttribute("edit", false);
         model.addAttribute("client", true);
         return "user/form";
     }
@@ -225,6 +224,7 @@ public class BuildingController {
         if(result.hasErrors()){
             model.addAttribute("formError", result.getFieldError().getDefaultMessage());
             model.addAttribute("buildingId", buildingId );
+            model.addAttribute("edit", false);
             model.addAttribute("client", true);
             return "user/form";
         }
@@ -240,7 +240,7 @@ public class BuildingController {
     @GetMapping("/{buildingId}/clients/{clientId}/edit")
     public String clientFormEdit(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user, @PathVariable Long clientId) {
         Client client = userService.findClientById(clientId).orElseThrow();
-        model.addAttribute("registerForm", new RegisterForm(client.getName(), client.getSurname(), client.getEmail(), "", client.getBirthDate(), client.getCellphone()));
+        model.addAttribute("objectForm", new RegisterForm(client.getName(), client.getSurname(), client.getEmail(), "", client.getBirthDate(), client.getCellphone()));
         model.addAttribute("buildingId", buildingId );
         model.addAttribute("clientId", clientId );
         model.addAttribute("client", true);

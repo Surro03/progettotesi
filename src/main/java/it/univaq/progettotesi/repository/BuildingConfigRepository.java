@@ -19,4 +19,7 @@ public interface BuildingConfigRepository extends JpaRepository<BuildingConfig, 
     @EntityGraph(attributePaths = "building")
     @Lock(LockModeType.PESSIMISTIC_WRITE) //Questo blocca la riga selezionata, impedendo ad altre transazioni di leggerla o aggiornarla finché la transazione corrente non viene completata
     Optional<BuildingConfig> findByBuildingId(Long buildingId);
+
+    void deleteByBuilding_Id(Long buildingId);
+
 }

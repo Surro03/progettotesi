@@ -40,6 +40,42 @@ public class Building {
     @Setter
     private String address;
 
+    @Column(nullable=false)
+    @Getter
+    @Setter
+    private String energeticClass;
+
+    @Column(nullable=false)
+    @Getter
+    @Setter
+    private Integer apartments;     // Numero di unità abitative
+
+    @Column(nullable=false)
+    @Getter
+    @Setter
+    private Integer yearOfConstruction;
+
+    @Column(nullable=false)
+    @Getter
+    @Setter
+    private Integer numbersOfFloors;
+
+    @Column(nullable=false)
+    @Getter
+    @Setter
+    private Double surface;           // Superficie in metri quadrati
+
+    // Coordinate per la mappa
+    @Column(nullable=false)
+    @Getter
+    @Setter
+    private Double latitude;
+
+    @Column(nullable=false)
+    @Getter
+    @Setter
+    private Double longitude;
+
     //@Column(nullable=false)
     //private String ifcIdentifier;
 
