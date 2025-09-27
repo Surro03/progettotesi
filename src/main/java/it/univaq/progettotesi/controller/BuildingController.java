@@ -173,14 +173,20 @@ public class BuildingController {
         }
         var u =  userService.findAdminByEmail(user.getUsername()).orElseThrow();
         var b = buildingService.findById(buildingId).orElseThrow();
-        assetService.create( u, b, assetForm.name(), assetForm.brand(), assetForm.type(), assetForm.model(), assetForm.commProtocol(), "");
+        var client = userService.findClientByEmail(assetForm.clientEmail());
+        if (client.isEmpty()) {
+            model.addAttribute("formError", "Il cliente con email " + assetForm.clientEmail() + " non esiste");
+            return "assets/form"; // torno al form con errore
+        }
+        Client c = client.get();
+        assetService.create( u, b, assetForm.name(), assetForm.brand(), assetForm.type(), assetForm.model(), assetForm.commProtocol(), c);
         return "redirect:/buildings/"  + buildingId;
     }
 
     @GetMapping("/{buildingId}/assets/{assetId}/edit")
     public String assetFormEdit(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user, @PathVariable Long assetId) {
         Asset asset = assetService.findById(assetId).orElseThrow();
-        model.addAttribute("assetForm", new AssetForm(asset.getName(),asset.getBrand(), asset.getType(), asset.getModel(), asset.getCommProtocol(),asset.getEndpoint()));
+        model.addAttribute("assetForm", new AssetForm(asset.getName(),asset.getBrand(), asset.getType(), asset.getModel(), asset.getCommProtocol(),asset.getClient().getEmail()));
         model.addAttribute("buildingId", buildingId );
         model.addAttribute("assetId", assetId );
         model.addAttribute("edit", true);
@@ -197,8 +203,14 @@ public class BuildingController {
             model.addAttribute("edit", true);
             return "assets/form";
         }
-        var b = buildingService.findById(buildingId).orElseThrow();
-        assetService.update(assetId, b, assetForm.name(), assetForm.brand(), assetForm.type(), assetForm.model(), assetForm.commProtocol(), "");
+        Building b = buildingService.findById(buildingId).orElseThrow();
+        var client = userService.findClientByEmail(assetForm.clientEmail());
+        if (client.isEmpty()) {
+            model.addAttribute("formError", "Il cliente con email " + assetForm.clientEmail() + " non esiste");
+            return "assets/form"; // torno al form con errore
+        }
+        Client c = client.get();
+        assetService.update(assetId, b, assetForm.name(), assetForm.brand(), assetForm.type(), assetForm.model(), assetForm.commProtocol(), c);
         model.addAttribute("updated", true);
         return "redirect:/buildings/"  + buildingId;
     }

@@ -1,5 +1,6 @@
 package it.univaq.progettotesi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,6 +42,7 @@ public abstract class User {
     @Getter
     @Setter
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     @Getter

@@ -12,6 +12,8 @@
 <div th:if="${param.error}">Username o password errati.<br></div>
 <div th:if="${param.logout}">Logout eseguito con successo.<br></div>
 <div th:if="${param.register}">Registrazione avvenuta con successo.<br></div>
+<div th:if="${param.invalid}">Sessione non valida, eseguire nuovamente l'accesso.<br></div>
+<div th:if="${param.expired}">Sessione scaduta, l'accesso è stato eseguito da un'altra parte.<br></div>
 
 <form action="/authenticate" method="post" autocomplete="on">
     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />

@@ -111,7 +111,7 @@ public class Building {
     public String toString() {
         return "Building{" +
                 "id=" + this.id +
-                ", user= " + this.admin +
+                ", admin= " + this.admin +
                 ", name= " + this.name +
                 ", address= "+ this.address + '}';
     }

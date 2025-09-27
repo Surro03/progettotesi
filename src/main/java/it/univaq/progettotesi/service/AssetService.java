@@ -2,9 +2,9 @@ package it.univaq.progettotesi.service;
 
 import it.univaq.progettotesi.entity.*;
 import it.univaq.progettotesi.repository.AssetRepository;
+import it.univaq.progettotesi.repository.ClientRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +17,12 @@ public class AssetService {
 
     private final AssetRepository AssetRepository;
     private final BuildingConfigService buildingConfigService;
+    private final ClientRepository clientRepository;
 
-    public AssetService(AssetRepository AssetRepository,  BuildingConfigService configService) {
+    public AssetService(AssetRepository AssetRepository,  BuildingConfigService configService,  ClientRepository clientRepository) {
         this.AssetRepository = AssetRepository;
         this.buildingConfigService = configService;
+        this.clientRepository = clientRepository;
     }
 
     public List<Asset> findAll() {
@@ -40,8 +42,9 @@ public class AssetService {
 
     @Transactional
     public Asset create(Admin user, Building building, String name, String brand,
-                        AssetType type, String model, CommProtocol commProtocol, String endpoint) {
-        Asset a = new Asset(user, building, name, brand, type, model, commProtocol, endpoint);
+                        AssetType type, String model, CommProtocol commProtocol, Client client) {
+
+        Asset a = new Asset(user, building, name, brand, type, model, commProtocol, client);
         Asset saved = AssetRepository.saveAndFlush(a);
         buildingConfigService.saveBuildingConfig(building.getId());
         return saved;
@@ -52,7 +55,7 @@ public class AssetService {
         return AssetRepository.save(asset);
     }
 
-    public Asset update(Long id,  Building building, String name, String brand, AssetType type, String model, CommProtocol commProtocol, String endpoint) {
+    public Asset update(Long id,  Building building, String name, String brand, AssetType type, String model, CommProtocol commProtocol, Client c) {
         Asset a = AssetRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Asset non trovato: " + id));
         a.setBuilding(building);
@@ -61,7 +64,7 @@ public class AssetService {
         a.setType(type);
         a.setModel(model);
         a.setCommProtocol(commProtocol);
-        a.setEndpoint(endpoint);
+        a.setClient(c);
         Asset asset = AssetRepository.save(a);
         buildingConfigService.saveBuildingConfig(building.getId());
         return asset;

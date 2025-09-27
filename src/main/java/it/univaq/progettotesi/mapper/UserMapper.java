@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserMapper {
 
-    public UserDTO createUserDTO(User user) {
+    public UserDTO toDto(User user) {
         UserDTO dto = new UserDTO();
 
 
