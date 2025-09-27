@@ -16,7 +16,7 @@
     <p><strong>Email Admin:</strong> <span th:text="${building.admin.email}">mario.rossi@email.com</span></p>
     <p><strong>Classe Energetica:</strong> <span th:text="${building.getEnergeticClass}">A2</span></p>
     <p><strong>Unità Abitative:</strong> <span th:text="${building.getApartments}">1</span></p>
-    <p><strong>Anno di Costruzione: </strong> <span th:text="${building.yearOfConstruction}">1890</span></p>
+    <p><strong>Anno di Costruzione:</strong> <span th:text="${building.yearOfConstruction}">1890</span></p>
     <p><strong>Numero di piani:</strong> <span th:text="${building.numbersOfFloors}">3</span></p>
     <p><a th:href="@{|/buildings/${buildingId}/edit|}">Modifica</a></p>
 </section>
@@ -81,7 +81,6 @@
                 <td th:text="${a.type}">INVERTER</td>
                 <td th:text="${a.model}">X1000</td>
                 <td th:text="${a.commProtocol}">MODBUS</td>
-                <td th:text="${a.endpoint}">192.168.1.10:502</td>
                 <td class="actions-cell">
                     <form th:action="@{/buildings/{buildingId}/assets/{assetId}/delete(buildingId=${building.id},assetId=${a.id})}" method="post" class="actions-item" onsubmit="return confirm('Eliminare questo asset?');">
                         <button type="submit">Elimina Asset</button>

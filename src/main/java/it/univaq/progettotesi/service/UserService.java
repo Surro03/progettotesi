@@ -124,7 +124,7 @@ public class UserService {
     }
 
     public Page<Client> findByBuildingId(Long buildingId, Pageable pageable) {
-        return ClientRepository.findByBuildingId(buildingId, pageable);
+        return ClientRepository.findByBuilding_Id(buildingId, pageable);
     }
 
     public Client createClient(String name, String surname, String email, String password,  Building building,  LocalDate birthDate, String cellphone) {
