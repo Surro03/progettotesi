@@ -17,6 +17,8 @@
                     <td th:if="${param.error}">Username o password errati.<br></td>
                     <td th:if="${param.logout}">Logout eseguito con successo.<br></td>
                     <td th:if="${param.register}">Registrazione avvenuta con successo.<br></td>
+                    <td th:if="${param.invalid}">Sessione non valida, eseguire nuovamente l'accesso.<br></td>
+                    <td th:if="${param.expired}">Sessione scaduta, l'accesso è stato eseguito da un'altra parte.<br></td>
                 </tr>
 
 

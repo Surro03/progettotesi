@@ -1,7 +1,8 @@
 package it.univaq.progettotesi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,13 +18,21 @@ public class Asset {
     private Long id;
 
     @ManyToOne(optional=false)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "admin_id")
     @Getter
-    private Admin user;
+    @JsonIgnore
+    private Admin admin;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id")
+    @Getter
+    @Setter
+    private Client client;
 
     @ManyToOne(optional=false)
     @JoinColumn(name = "building_id")
     @Getter
+    @JsonIgnore
     private Building building;
 
     @Column(nullable=false)
@@ -47,30 +56,30 @@ public class Asset {
     @Setter
     private String model;
 
-    @Column(nullable=false)
+    @Column()
     @Enumerated(EnumType.STRING)
     @Getter
     @Setter
     private CommProtocol commProtocol; //e.g. MODBUS...
 
-    @Column
-    @Getter
-    @Setter
-    private String endpoint;
-
     public Asset() {
         //vuoto per JPA
     }
 
-    public Asset(Admin user, Building building, String name, String brand, AssetType type, String model, CommProtocol commProtocol, String endpoint) {
-        this.user = user;
+    public Asset(Admin admin, Building building, String name, String brand, AssetType type, String model, CommProtocol commProtocol, Client client) {
+        this.admin = admin;
         this.building = building;
         this.name = name;
         this.brand = brand;
         this.type = type;
         this.model = model;
         this.commProtocol = commProtocol;
-        this.endpoint = endpoint;
+        this.client = client;
+    }
+
+    @JsonProperty("buildingId") // lo vedrai nel JSON come "buildingId"
+    public Long getBuildingId() {
+        return (building != null) ? building.getId() : null;
     }
 
 

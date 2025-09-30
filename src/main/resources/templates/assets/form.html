@@ -14,6 +14,8 @@
     Titolo
 </h2>
 
+<a><span th:text="${formError}">Errori nel form</span> </a>
+
 <section class="card">
     <section class="details">
         <form th:action="${edit}?  @{/buildings/{buildingId}/assets/{assetId}/edit(buildingId=${buildingId},assetId=${assetId})} : @{/buildings/{buildingId}/assets/new(buildingId=${buildingId})}"
@@ -60,6 +62,14 @@
                         </select>
                     </td>
                     <td th:if="${#fields.hasErrors('commProtocol')}" th:errors="*{commProtocol}">Errore protocollo</td>
+                </tr>
+
+                <tr>
+                    <td><label for="clientEmail">Protocollo di comunicazione:</label></td>
+                    <td>
+                        <input id="clientEmail" type="email" th:field="*{clientEmail}" required>
+                    </td>
+                    <td th:if="${#fields.hasErrors('clientEmail')}" th:errors="*{clientEmail}">Errore Email del cliente</td>
                 </tr>
 
                 <tr>

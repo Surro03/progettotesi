@@ -60,7 +60,7 @@ public class UserService {
         Admin savedAdmin = AdminRepository.save(b); // sposto la chiamata fuori dal return per chiarezza
         savedAdmin.setUsername(name +  surname + savedAdmin.getId());
         AdminRepository.save(b);
-        UserDTO userDTO = userMapper.createUserDTO(b);
+        UserDTO userDTO = userMapper.toDto(b);
         userDTO.setPassword(password);
         System.out.println("Salvataggio Admin completato.");
 
@@ -86,7 +86,7 @@ public class UserService {
     }
 
     public Admin updateAdmin(Admin admin, String oldUsername, String newPassword) {
-        UserDTO userDTO = userMapper.createUserDTO(admin);
+        UserDTO userDTO = userMapper.toDto(admin);
         userDTO.setPassword(newPassword);
         try {
             System.out.println("Tentativo di invio DTO...");
@@ -124,7 +124,7 @@ public class UserService {
     }
 
     public Page<Client> findByBuildingId(Long buildingId, Pageable pageable) {
-        return ClientRepository.findByBuildingId(buildingId, pageable);
+        return ClientRepository.findByBuilding_Id(buildingId, pageable);
     }
 
     public Client createClient(String name, String surname, String email, String password,  Building building,  LocalDate birthDate, String cellphone) {
@@ -135,7 +135,7 @@ public class UserService {
         savedClient.setUsername(name +  surname + savedClient.getId());
         ClientRepository.save(c);
         System.out.println("Salvataggio Cliente completato.");
-        UserDTO userDTO = userMapper.createUserDTO(c);
+        UserDTO userDTO = userMapper.toDto(c);
         userDTO.setPassword(password);
         sendUserDTO(userDTO);
 
@@ -158,7 +158,7 @@ public class UserService {
         c.setCellphone(cellphone);
         String oldUsername = c.getUsername();
         c.setUsername(name +  surname + c.getId());
-        UserDTO userDTO = userMapper.createUserDTO(c);
+        UserDTO userDTO = userMapper.toDto(c);
         userDTO.setPassword(password);
         try {
             System.out.println("Tentativo di invio DTO...");
@@ -181,5 +181,7 @@ public class UserService {
     }
 
 
-
+    public Optional<Client> findByClientEmail(String clientEmail) {
+        return ClientRepository.findByEmail(clientEmail);
+    }
 }

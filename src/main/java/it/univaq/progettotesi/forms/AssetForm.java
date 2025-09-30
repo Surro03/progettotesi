@@ -3,7 +3,6 @@ package it.univaq.progettotesi.forms;
 import it.univaq.progettotesi.entity.AssetType;
 import it.univaq.progettotesi.entity.CommProtocol;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record AssetForm(
@@ -26,8 +25,8 @@ public record AssetForm(
         
         CommProtocol commProtocol,
 
-        //@NotBlank(message = "Inserire un endpoint valido")
-        String endpoint
+        @NotBlank(message = "Inserire un email valida")
+        String clientEmail
 
 ) {
 }
