@@ -1,6 +1,6 @@
 package it.univaq.progettotesi.controller;
 
-import it.univaq.progettotesi.dto.AssetDTO;
+import it.univaq.progettotesi.dto.AssetRestDTO;
 import it.univaq.progettotesi.entity.Asset;
 import it.univaq.progettotesi.repository.AssetRepository;
 import org.springframework.data.domain.Page;
@@ -12,16 +12,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/buildings")
-public class AssetRestController {
+public class AssetInternalRestController {
 
     private final AssetRepository assetRepository;
 
-    public AssetRestController(AssetRepository assetRepository) {
+    public AssetInternalRestController(AssetRepository assetRepository) {
         this.assetRepository = assetRepository;
     }
 
     @GetMapping("/{buildingId}/assets")
-    public Page<AssetDTO> getAssets(
+    public Page<AssetRestDTO> getAssets(
             @PathVariable Long buildingId,
             Pageable pageable
     ) {
@@ -29,15 +29,15 @@ public class AssetRestController {
                 .map(this::toDTO);
     }
 
-    private AssetDTO toDTO(Asset asset) {
-        return new AssetDTO(
+    private AssetRestDTO toDTO(Asset asset) {
+        return new AssetRestDTO(
                 asset.getId(),
                 asset.getName(),
                 asset.getBrand(),
                 asset.getType(),
                 asset.getModel(),
                 asset.getCommProtocol(),
-                asset.getEndpoint()
+                asset.getClient().getEmail()
         );
     }
 }

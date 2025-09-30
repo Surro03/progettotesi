@@ -22,7 +22,7 @@ public class ClientRestController {
 
     @GetMapping("/{buildingId}/clients")
     public Page<ClientDTO> getClients(@PathVariable Long buildingId, Pageable pageable) {
-        return clientRepository.findByBuildingId(buildingId, pageable)
+        return clientRepository.findByBuilding_Id(buildingId, pageable)
                 .map(this::toDTO);
     }
 

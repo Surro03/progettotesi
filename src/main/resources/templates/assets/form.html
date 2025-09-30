@@ -65,9 +65,9 @@
                 </tr>
 
                 <tr>
-                    <td><label for="clientEmail">Protocollo di comunicazione:</label></td>
+                    <td><label for="clientEmail">Email Cliente a cui appartiene:</label></td>
                     <td>
-                        <input id="clientEmail" type="email" th:field="*{clientEmail}" required>
+                        <input class="input" id="clientEmail" type="email" th:field="*{clientEmail}" placeholder="mario.rossi@gmail.com" required>
                     </td>
                     <td th:if="${#fields.hasErrors('clientEmail')}" th:errors="*{clientEmail}">Errore Email del cliente</td>
                 </tr>

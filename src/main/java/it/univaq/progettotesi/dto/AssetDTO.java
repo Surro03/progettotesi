@@ -13,16 +13,4 @@ public class AssetDTO {
     private String type;
     private String model;
 
-import it.univaq.progettotesi.entity.AssetType;
-import it.univaq.progettotesi.entity.CommProtocol;
-
-public record AssetRestDTO(
-        Long id,
-        String name,
-        String brand,
-        AssetType type,
-        String model,
-        CommProtocol commProtocol,
-        String endPoint
-) {
 }
