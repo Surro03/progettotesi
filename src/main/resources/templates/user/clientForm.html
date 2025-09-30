@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${edit} ? 'Modifica Cliente' : 'Aggiungi Cliente'">Form Cliente</title>
+    <link rel="stylesheet" th:href="@{/css/prova.css}" />
+    <script th:src="@{/javascript/prova.js}" defer></script>
+</head>
+<body>
+<div th:replace="topbar :: topbar"></div>
+
+<h1 style="text-align: center" th:text="${edit} ? 'Modifica Cliente' : 'Aggiungi Cliente'">Form Cliente</h1>
+
+<section class="card">
+    <section class="details">
+        <form th:action="${formAction}"
+              th:object="${objectForm}" method="post">
+
+            <table class="table">
+                <tr>
+                    <td><label>Nome:</label></td>
+                    <td><input class="input" type="text" th:field="*{name}"  placeholder="Mario" required autofocus/></td>
+                    <td th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Errore Nome</td>
+                </tr>
+
+                <tr>
+                    <td><label>Cognome:</label></td>
+                    <td><input class="input" type="text" th:field="*{surname}" placeholder="Rossi" required autofocus/></td>
+                    <td th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}">Errore Cognome</td>
+                </tr>
+
+                <tr>
+                    <td><label>Email:</label></td>
+                    <td><input class="input" type="email" th:field="*{email}" placeholder="mario.rossi@email.com" required autofocus/></td>
+                    <td th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Errore Email</td>
+                </tr>
+
+                <tr>
+                    <td><label>Password:</label></td>
+                    <td><input class="input" type="password" th:field="*{password}" th:attr="required=${!edit}"/></td>
+                    <td th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Errore Password</td>
+                </tr>
+
+                <tr>
+                    <td><label>Data di nascita:</label></td>
+                    <td><input class="input" type="date" th:field="*{birthDate}" required autofocus/></td>
+                    <td th:if="${#fields.hasErrors('birthDate')}" th:errors="*{birthDate}">Errore Data di Nascita</td>
+                </tr>
+
+                <tr>
+                    <td><label>Cellulare:</label></td>
+                    <td><input class="input" type="tel" th:field="*{cellphone}" placeholder="+393334445555" required autofocus/></td>
+                    <td th:if="${#fields.hasErrors('cellphone')}" th:errors="*{cellphone}">Errore Numero di Telefono</td>
+                </tr>
+
+                <tr>
+                    <td colspan="2">
+                        <div class="btn-row">
+                            <button class="btn btn-primary" type="submit" th:text="${edit} ? 'Modifica' : 'Aggiungi'">Invia</button>
+                            <a class="link" th:href="@{'/buildings/' + ${buildingId}}">Annulla</a>
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+
+
+        </form>
+    </section>
+
+</section>
+
+
+</body>
+</html>

@@ -4,22 +4,10 @@
     <meta charset="UTF-8">
     <title>Dettagli account</title>
     <link rel="stylesheet" th:href="@{/css/prova.css}" />
+    <script th:src="@{/javascript/prova.js}" defer></script>
 </head>
 <body>
-<header class="topbar">
-    <div class="brand">
-        <span class="logo">BIM</span>
-        <span>Account</span>
-    </div>
-    <nav class="topnav">
-        <a th:href="@{/home}">Home</a>
-        <a th:href="@{/buildings}">Edifici</a>
-        <a th:href="@{/user/details}">Profilo</a>
-        <form th:action="@{/logout}" method="post" style="display:inline;">
-            <button type="submit" class="logout-btn">Logout</button>
-        </form>
-    </nav>
-</header>
+<div th:replace="topbar :: topbar"></div>
 <h1 style="text-align: center">Dettagli Account</h1>
 
 <div th:if="${edit}">

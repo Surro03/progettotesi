@@ -3,80 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <title>Registration</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <link rel="stylesheet" th:href="@{/css/prova.css}" />
     <script th:src="@{/javascript/script.js}" defer></script>
 </head>
 <body>
-<h2>Effettua la registrazione</h2>
+<h2 style="text-align: center">Effettua la registrazione</h2>
 
-<form th:action="@{/register}" th:object="${objectForm}" method="post" class="form-modern">
-    <!-- CSRF -->
-    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+<section class="card">
+    <section class="details">
+        <form th:action="@{/register}" th:object="${objectForm}" method="post" >
+            <table class="table">
+                <!-- CSRF -->
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
-    <div class="form-group">
-        <label for="name">Nome:</label>
-        <input id="name" type="text" th:field="*{name}" autocomplete="given-name"
-               placeholder="Inserisci il tuo nome" required autofocus />
-        <div class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Errore nome</div>
-    </div>
+                <tr>
+                    <td><label for="name">Nome:</label></td>
+                    <td><input class="input" id="name" type="text" th:field="*{name}" autocomplete="given-name"
+                               placeholder="Inserisci il tuo nome" required autofocus /></td>
+                    <td><div class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Errore nome</div></td>
+                </tr>
 
-    <div class="form-group">
-        <label for="surname">Cognome:</label>
-        <input id="surname" type="text" th:field="*{surname}" autocomplete="family-name"
-               placeholder="Inserisci il tuo cognome" required />
-        <div class="error" th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}">Errore cognome</div>
-    </div>
+                <tr>
+                    <td><label for="surname">Cognome:</label></td>
+                    <td><input class="input" id="surname" type="text" th:field="*{surname}" autocomplete="family-name"
+                               placeholder="Inserisci il tuo cognome" required /></td>
+                    <td><div class="error" th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}">Errore cognome</div></td>
+                </tr>
 
-    <div class="form-group">
-        <label for="email">Email:</label>
-        <input id="email" type="email" th:field="*{email}" autocomplete="email"
-               placeholder="Inserisci la tua email" required />
-        <div class="error">
-            <span th:if="${emailError}">Email già in uso</span>
-            <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Errore email</span>
-        </div>
-    </div>
+                <tr>
+                    <td><label for="email">Email:</label></td>
+                    <td><input class="input" id="email" type="email" th:field="*{email}" autocomplete="email"
+                               placeholder="Inserisci la tua email" required /></td>
+                    <td><div class="error">
+                        <span th:if="${emailError}">Email già in uso</span>
+                        <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Errore email</span>
+                    </div></td>
+                </tr>
 
-    <div class="form-group">
-        <label for="password">Password:</label>
-        <div class="password-wrapper">
-            <input id="password" type="password" th:field="*{password}" autocomplete="new-password"
-                   placeholder="Inserisci la tua password" required />
-            <button type="button" id="togglePassword">👁️</button>
-        </div>
-        <div class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Errore password</div>
-    </div>
+                <tr>
+                    <td><label for="password">Password:</label></td>
+                    <td><div class="password-wrapper">
+                        <input class="input" id="password" type="password" th:field="*{password}" autocomplete="new-password"
+                               placeholder="Inserisci la tua password" required />
+                        <button class="btn btn-primary" type="button" id="togglePassword">👁️</button>
+                    </div></td>
+                    <td><div class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Errore password</div></td>
+                </tr>
 
-    <!-- Data di nascita -->
-    <div class="form-group">
-        <label for="dateOfBirth">Data di nascita:</label>
-        <input id="dateOfBirth" type="date" th:field="*{birthDate}" required
-               th:attr="max=${#dates.format(#dates.createNow(),'yyyy-MM-dd')}" />
-        <div class="error" th:if="${#fields.hasErrors('birthDate')}" th:errors="*{birthDate}">
-            Errore data di nascita
-        </div>
-    </div>
+                <!-- Data di nascita -->
+                <tr>
+                    <td><label for="dateOfBirth">Data di nascita:</label></td>
+                    <td><input class="input" id="dateOfBirth" type="date" th:field="*{birthDate}" required
+                               th:attr="max=${#dates.format(#dates.createNow(),'yyyy-MM-dd')}" /></td>
+                    <td><div class="error" th:if="${#fields.hasErrors('birthDate')}" th:errors="*{birthDate}">
+                        Errore data di nascita
+                    </div></td>
+                </tr>
 
-    <!-- Telefono -->
-    <div class="form-group">
-        <label for="phone">Telefono:</label>
-        <input id="phone" type="tel" th:field="*{cellphone}" placeholder="+393331234567" required
-               pattern="^\+?[0-9]{7,15}$"
-               title="Inserisci un numero valido (7–15 cifre, opzionale + iniziale)"/>
-        <div class="error" th:if="${#fields.hasErrors('cellphone')}" th:errors="*{cellphone}">
-            Errore telefono
-        </div>
-    </div>
+                <!-- Telefono -->
+                <tr>
+                    <td><label for="phone">Telefono:</label></td>
+                    <td><input class="input" id="phone" type="tel" th:field="*{cellphone}" placeholder="+393331234567" required
+                           pattern="^\+?[0-9]{7,15}$"
+                               title="Inserisci un numero valido (7–15 cifre, opzionale + iniziale)"/></td>
+                    <td><div class="error" th:if="${#fields.hasErrors('cellphone')}" th:errors="*{cellphone}">
+                        Errore telefono
+                    </div></td>
+                </tr>
 
-    <button type="submit" class="btn-primary">Registrati</button>
-</form>
+                <tr>
+                    <td><button type="submit" class="btn btn-primary">Registrati</button></td>
+                    <td><div class="form-footer">
+                        Sei registrato?
+                        <button type="button" class="btn btn-primary"
+                                th:onclick="|window.location.href='@{/login}'|">
+                            Accedi
+                        </button>
+                    </div></td>
+                </tr>
 
-<div class="form-footer">
-    Sei registrato?
-    <button type="button" class="btn-secondary"
-            th:onclick="|window.location.href='@{/login}'|">
-        Accedi
-    </button>
-</div>
+            </table>
+
+        </form>
+    </section>
+</section>
+
+
+
 </body>
 </html>

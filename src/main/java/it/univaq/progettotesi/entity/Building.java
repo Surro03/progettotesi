@@ -83,10 +83,17 @@ public class Building {
         // no-args constructor richiesto da JPA
     }
 
-    public Building(Admin user, String name, String address) {
+    public Building(Admin user, String name, String address, String energeticClass, Integer apartments, Integer yearOfConstruction, Integer numbersOfFloors, Double surface, Double latitude, Double longitude) {
         this.admin = user;
         this.name = name;
         this.address = address;
+        this.energeticClass = energeticClass;
+        this.apartments = apartments;
+        this.yearOfConstruction = yearOfConstruction;
+        this.numbersOfFloors = numbersOfFloors;
+        this.surface = surface;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public void addClient(Client client) {
@@ -113,7 +120,14 @@ public class Building {
                 "id=" + this.id +
                 ", user= " + this.admin +
                 ", name= " + this.name +
-                ", address= "+ this.address + '}';
+                ", address= "+ this.address +
+                ", energeticClass= " + this.energeticClass +
+                ", apartments= " + this.apartments +
+                ", yearOfConstruction= " + this.yearOfConstruction +
+                ", numbersOfFloors= " + this.numbersOfFloors +
+                ", surface= " + this.surface +
+                ", latitude= " + this.latitude +
+                ", longitude= " + this.longitude +'}';
     }
 
 

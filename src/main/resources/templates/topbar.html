@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Register New Building</title>
+    <link rel="stylesheet" th:href="@{/css/prova.css}" />
+    <script th:src="@{/javascript/prova.js}" defer></script>
+</head>
+
+<body>
+<div th:fragment="topbar">
+    <header class="topbar">
+        <div class="brand">
+            <span class="logo">BIM</span>
+            <span th:text="#{msg.welcome}"></span>
+            <span th:text="${user.getName()}"></span> <span th:text = "${user.getSurname()}"></span>
+        </div>
+        <nav class="topnav">
+            <div class="dropdown">
+                <a href="#" onclick="toggleDropdown()">Edifici</a>
+                <div class="dropdown-content" id="dropdownMenu">
+                    <a th:href="@{/buildings}">Lista edifici</a>
+                    <a th:href="@{/buildings/map}">Mappa edifici</a>
+                </div>
+            </div>
+            <a th:href="@{/user/details}">Profilo</a>
+            <form th:action="@{/logout}" method="post" style="display:inline;">
+                <button type="submit" class="logout-btn">Logout</button>
+            </form>
+        </nav>
+    </header>
+</div>
+
+</body>

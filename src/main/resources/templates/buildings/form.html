@@ -3,74 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <title>Register New Building</title>
+    <link rel="stylesheet" th:href="@{/css/prova.css}" />
+    <script th:src="@{/javascript/prova.js}" defer></script>
 </head>
 <body>
+<div th:replace="topbar :: topbar"></div>
 
-<h2 th:text="${edit}? |Modifica l'edificio ${buildingId}| : 'Registra il tuo edifico'">
+<h2 style="text-align: center" th:text="${edit}? |Modifica l'edificio ${buildingId}| : 'Registra il tuo edifico'">
     Titolo
 </h2>
 
 
+<section class="card">
+    <section class="details">
+        <form th:action="${edit} ? @{/buildings/{id}/edit(id=${buildingId})} : @{/buildings/new}" th:object="${buildingForm}" method="post">
+            <table class="table">
+                <tr>
+                    <td ><label for="name">Nome:</label></td>
+                    <td><input class="input" id="name" type="text" th:field="*{name}" placeholder="Nome edificio" required/></td>
+                    <td th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name Error</td>
+                </tr>
+                <tr>
+                    <td><label for="address">Indirizzo:</label></td>
+                    <td><input class="input" id="address" type="text" th:field="*{address}" placeholder="Indirizzo edificio" required/></td>
+                    <td th:if="${#fields.hasErrors('address')}" th:errors="*{address}">Address Error</td>
+                </tr>
 
-    <form th:action="${edit} ? @{/buildings/{id}/edit(id=${buildingId})} : @{/buildings/new}" th:object="${buildingForm}" method="post">
-        <table>
-            <tr>
-                <td><label for="name">Nome:</label></td>
-                <td><input id="name" type="text" th:field="*{name}" placeholder="Nome edificio" required/></td>
-                <td th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name Error</td>
-            </tr>
-            <tr>
-                <td><label for="address">Indirizzo:</label></td>
-                <td><input id="address" type="text" th:field="*{address}" placeholder="Indirizzo edificio" required/></td>
-                <td th:if="${#fields.hasErrors('address')}" th:errors="*{address}">Address Error</td>
-            </tr>
+                <tr>
+                    <td><label for="energeticClass">Classe Energetica:</label></td>
+                    <td><input class="input" id="energeticClass" type="text" th:field="*{energeticClass}" placeholder="Es. A4" required/></td>
+                    <td th:if="${#fields.hasErrors('energeticClass')}" th:errors="*{energeticClass}">Errore Classe Energetica</td>
+                </tr>
+                <tr>
+                    <td><label for="apartments">Unità Abitative:</label></td>
+                    <td><input class="input" id="apartments" type="number" th:field="*{apartments}" placeholder="Es. 10" min="1" required/></td>
+                    <td th:if="${#fields.hasErrors('apartments')}" th:errors="*{apartments}">Errore Unità Abitative</td>
+                </tr>
+                <tr>
+                    <td><label for="yearOfConstruction">Anno di Costruzione:</label></td>
+                    <td><input class="input" id="yearOfConstruction" type="number" th:field="*{yearOfConstruction}" placeholder="Es. 2005" min="1800" th:max="${#dates.year(#dates.createNow())}" required/></td>
+                    <td th:if="${#fields.hasErrors('yearOfConstruction')}" th:errors="*{yearOfConstruction}">Errore Anno</td>
+                </tr>
+                <tr>
+                    <td><label for="numberOfFloors">Numero di Piani:</label></td>
+                    <td><input class="input" id="numberOfFloors" type="number" th:field="*{numberOfFloors}" placeholder="Es. 3" min="1" required/></td>
+                    <td th:if="${#fields.hasErrors('numberOfFloors')}" th:errors="*{numberOfFloors}">Errore Numero Piani</td>
+                </tr>
+                <tr>
+                    <td><label for="surface">Superficie (mq):</label></td>
+                    <td><input class="input" id="surface" type="number" th:field="*{surface}" placeholder="Es. 1200.5" step="any" min="0.01" required/></td>
+                    <td th:if="${#fields.hasErrors('surface')}" th:errors="*{surface}">Errore Superficie</td>
+                </tr>
+                <tr>
+                    <td><label for="latitude">Latitudine:</label></td>
+                    <td><input class="input" id="latitude" type="number" th:field="*{latitude}" placeholder="Es. 42.35" step="any" min="-90" max="90" required/></td>
+                    <td th:if="${#fields.hasErrors('latitude')}" th:errors="*{latitude}">Errore Latitudine</td>
+                </tr>
+                <tr>
+                    <td><label for="longitude">Longitudine:</label></td>
+                    <td><input class="input" id="longitude" type="number" th:field="*{longitude}" placeholder="Es. 13.40" step="any" min="-180" max="180" required/></td>
+                    <td th:if="${#fields.hasErrors('longitude')}" th:errors="*{longitude}">Errore Longitudine</td>
+                </tr>
+                <tr>
+                    <td th:if="!${edit}"><button class="btn btn-primary" type="submit">Registra Edificio</button></td>
+                    <td th:if="${edit}"><button class="btn btn-primary" type="submit">Modifica Edificio</button></td>
+                    <td>
+                        <a class="link" th:if="${!edit}" th:href="@{/buildings}">Annulla</a>
+                        <a class="link" th:if="${edit}"  th:href="@{/buildings/{buildingId}(buildingId=${buildingId})}">Annulla</a>
+                    </td>
+                </tr>
+            </table>
 
-            <tr>
-                <td><label for="classeEnergetica">Classe Energetica:</label></td>
-                <td><input id="classeEnergetica" type="text" th:field="*{classeEnergetica}" placeholder="Es. A4" required/></td>
-                <td th:if="${#fields.hasErrors('classeEnergetica')}" th:errors="*{classeEnergetica}">Errore Classe Energetica</td>
-            </tr>
-            <tr>
-                <td><label for="unitaAbitative">Unità Abitative:</label></td>
-                <td><input id="unitaAbitative" type="number" th:field="*{unitaAbitative}" placeholder="Es. 10" min="1" required/></td>
-                <td th:if="${#fields.hasErrors('unitaAbitative')}" th:errors="*{unitaAbitative}">Errore Unità Abitative</td>
-            </tr>
-            <tr>
-                <td><label for="annoCostruzione">Anno di Costruzione:</label></td>
-                <td><input id="annoCostruzione" type="number" th:field="*{annoCostruzione}" placeholder="Es. 2005" min="1800" th:max="${#dates.year(#dates.createNow())}" required/></td>
-                <td th:if="${#fields.hasErrors('annoCostruzione')}" th:errors="*{annoCostruzione}">Errore Anno</td>
-            </tr>
-            <tr>
-                <td><label for="numeroPiani">Numero di Piani:</label></td>
-                <td><input id="numeroPiani" type="number" th:field="*{numeroPiani}" placeholder="Es. 3" min="1" required/></td>
-                <td th:if="${#fields.hasErrors('numeroPiani')}" th:errors="*{numeroPiani}">Errore Numero Piani</td>
-            </tr>
-            <tr>
-                <td><label for="superficie">Superficie (mq):</label></td>
-                <td><input id="superficie" type="number" th:field="*{superficie}" placeholder="Es. 1200.5" step="any" min="0.01" required/></td>
-                <td th:if="${#fields.hasErrors('superficie')}" th:errors="*{superficie}">Errore Superficie</td>
-            </tr>
-            <tr>
-                <td><label for="latitudine">Latitudine:</label></td>
-                <td><input id="latitudine" type="number" th:field="*{latitudine}" placeholder="Es. 42.35" step="any" min="-90" max="90" required/></td>
-                <td th:if="${#fields.hasErrors('latitudine')}" th:errors="*{latitudine}">Errore Latitudine</td>
-            </tr>
-            <tr>
-                <td><label for="longitudine">Longitudine:</label></td>
-                <td><input id="longitudine" type="number" th:field="*{longitudine}" placeholder="Es. 13.40" step="any" min="-180" max="180" required/></td>
-                <td th:if="${#fields.hasErrors('longitudine')}" th:errors="*{longitudine}">Errore Longitudine</td>
-            </tr>
-            <tr>
-                <td th:if="!${edit}"><button type="submit">Registra Edificio</button></td>
-                <td th:if="${edit}"><button type="submit">Modifica Edificio</button></td>
-                <td>
-                    <a th:if="${!edit}" th:href="@{/buildings}">Annulla</a>
-                    <a th:if="${edit}"  th:href="@{/buildings/{buildingId}(buildingId=${buildingId})}">Annulla</a>
-                </td>
-            </tr>
-        </table>
+        </form>
+    </section>
+</section>
 
-    </form>
 
 </body>
 </html>

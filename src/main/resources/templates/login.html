@@ -3,42 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <link rel="stylesheet" th:href="@{/css/prova.css}" />
     <script th:src="@{/javascript/script.js}" defer></script>
 </head>
 <body>
-<h2>Effettua il Login</h2>
+<h2 style="text-align: center">Effettua il Login</h2>
 
-<div th:if="${param.error}">Username o password errati.<br></div>
-<div th:if="${param.logout}">Logout eseguito con successo.<br></div>
-<div th:if="${param.register}">Registrazione avvenuta con successo.<br></div>
+<section class="card">
+    <section class="details">
+        <form action="/authenticate" method="post" autocomplete="on">
+            <table class="table">
+                <tr>
+                    <td th:if="${param.error}">Username o password errati.<br></td>
+                    <td th:if="${param.logout}">Logout eseguito con successo.<br></td>
+                    <td th:if="${param.register}">Registrazione avvenuta con successo.<br></td>
+                </tr>
 
-<form action="/authenticate" method="post" autocomplete="on">
-    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
-    <div class="form-group">
-        <label for="email">Email:</label>
-        <input id="email" type="email" name="email" placeholder="Inserisci la tua email" required autofocus>
-    </div>
 
-    <div class="form-group">
-        <label for="password">Password:</label>
-        <div class="password-wrapper">
-            <input id="password" type="password" name="password"
-                   placeholder="Inserisci la tua password" required autocomplete="off">
-            <button type="button" id="togglePassword">👁️</button>
-        </div>
-    </div>
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <tr>
+                    <td><label for="email">Email:</label></td>
+                    <td><input class="input" id="email" type="email" name="email" placeholder="Inserisci la tua email" required autofocus></td>
+                </tr>
 
-    <button type="submit">Accedi</button>
-</form>
 
-<div style="margin-top:1rem;">
-    Non sei registrato?
-    <button type="button" class="btn-secondary"
-            th:onclick="|window.location.href='@{/register}'|">
-        Registrati
-    </button>
-</div>
+                <tr>
+                    <td><label for="password">Password:</label></td>
+                    <td><div class="password-wrapper">
+                        <input class="input" id="password" type="password" name="password"
+                               placeholder="Inserisci la tua password" required autocomplete="off">
+                        <button class="btn btn-primary" type="button" id="togglePassword">👁️</button>
+                    </div></td>
+                </tr>
+
+                <tr>
+                    <td><button class="btn btn-primary" type="submit">Accedi</button></td>
+                    <td><div style="margin-top:1rem;">
+                        Non sei registrato?
+                        <button  type="button" class="btn btn-primary"
+                                th:onclick="|window.location.href='@{/register}'|">
+                            Registrati
+                        </button>
+                    </div></td>
+                </tr>
+
+
+
+
+
+
+
+            </table>
+        </form>
+    </section>
+</section>
+
 </body>
 </html>

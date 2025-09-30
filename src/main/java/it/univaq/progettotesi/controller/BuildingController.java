@@ -1,5 +1,9 @@
 package it.univaq.progettotesi.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import it.univaq.progettotesi.dto.BuildingDTO;
+import it.univaq.progettotesi.dto.BuildingMapDTO;
 import it.univaq.progettotesi.entity.*;
 import it.univaq.progettotesi.forms.AssetForm;
 import it.univaq.progettotesi.forms.BuildingForm;
@@ -20,6 +24,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/buildings")
@@ -44,7 +50,7 @@ public class BuildingController {
 
         var u = userService.findAdminByEmail(user.getUsername()).orElseThrow();
         Page<Building> page = buildingService.findByAdminId(u.getId(), pageable);
-
+        model.addAttribute("user", u);
         model.addAttribute("page", page);                 // l'oggetto Page<Building>
         model.addAttribute("buildings", page.getContent()); // solo la lista per il <tbody>
 
@@ -52,7 +58,9 @@ public class BuildingController {
     }
 
     @GetMapping("/new")
-    public String buildingForm(Model model){
+    public String buildingForm(Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+        var u = userService.findAdminByEmail(user.getUsername()).orElseThrow();
+        model.addAttribute("user", u);
         model.addAttribute("buildingForm", new BuildingForm("", "","", null,  null, null, null, null, null));
         model.addAttribute("edit", false);
         return "buildings/form";
@@ -60,13 +68,15 @@ public class BuildingController {
 
     @PostMapping("/new")
     public String newBuilding(@Valid BuildingForm form, BindingResult bindingResult, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user, Model model) {
+        var u = userService.findAdminByEmail(user.getUsername()).orElseThrow();
         if (bindingResult.hasErrors()) {
             model.addAttribute("formError", bindingResult.getFieldError().getDefaultMessage());
             model.addAttribute("edit", false);
+            model.addAttribute("user", u);
             return "buildings/form";
         }
-        var u = userService.findAdminByEmail(user.getUsername()).orElseThrow();
-        Building building = buildingService.create(u, form.name(), form.address());
+        model.addAttribute("user", u);
+        Building building = buildingService.create(u, form.name(), form.address(), form.energeticClass(), form.apartments(), form.yearOfConstruction(), form.numberOfFloors(), form.surface(), form.latitude(), form.longitude());
         return "redirect:/buildings/" + building.getId();
     }
 
@@ -82,8 +92,36 @@ public class BuildingController {
                                   @Qualifier("clients")
                                   @PageableDefault(size = 5, sort = "name", direction = Sort.Direction.DESC)
                                   Pageable clientsPageable
-    ) {
+    ) throws JsonProcessingException{
+
         var u = userService.findAdminByEmail(user.getUsername()).orElseThrow();
+
+        Building building = buildingService.findById(buildingId).orElseThrow();
+
+        if (!u.getId().equals(building.getAdmin().getId())) {
+            model.addAttribute("permissionError", "Non sei il proprietario di questo edificio");
+            return "redirect:/buildings/";
+        }
+
+        Page<Asset> pageAssets = assetService.findByBuildingId(buildingId, assetsPageable);
+        Page<Client> pageClients = userService.findByBuildingId(buildingId, clientsPageable);
+
+        model.addAttribute("building", building);
+        model.addAttribute("assetsPage", pageAssets);
+        model.addAttribute("assets", pageAssets.getContent());
+        model.addAttribute("clientsPage", pageClients);
+        model.addAttribute("clients", pageClients.getContent());
+        model.addAttribute("user", u);
+
+        // 🔑 aggiungi la parte per la mappa
+        BuildingMapDTO dto = new BuildingMapDTO(building.getId(), building.getName(), building.getLatitude(), building.getLongitude());
+        ObjectMapper mapper = new ObjectMapper();
+        String buildingsJson = mapper.writeValueAsString(List.of(dto));
+        model.addAttribute("buildingsJson", buildingsJson);
+
+        return "buildings/details";
+
+        /*var u = userService.findAdminByEmail(user.getUsername()).orElseThrow();
 
         if (buildingService.findById(buildingId).isEmpty()) {
             model.addAttribute("searchError", "L'edifico con id: " + buildingId + " non esiste");
@@ -108,7 +146,7 @@ public class BuildingController {
         model.addAttribute("clientsPage", pageClients);
         model.addAttribute("clients", pageClients.getContent());
 
-        return "buildings/details";
+        return "buildings/details"; */
     }
 
 
@@ -119,24 +157,29 @@ public class BuildingController {
     }
 
     @GetMapping("/{buildingId}/edit")
-    public String editBuilding(@PathVariable Long buildingId, Model model) {
+    public String editBuilding(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+        var u = userService.findAdminByEmail(user.getUsername()).orElseThrow();
         Building building = buildingService.findById(buildingId).orElseThrow();
         model.addAttribute("buildingId", building.getId());
         model.addAttribute("buildingForm", new BuildingForm(building.getName(),building.getAddress(), building.getEnergeticClass(), building.getApartments(), building.getYearOfConstruction(), building.getNumbersOfFloors(), building.getSurface(), building.getLatitude(), building.getLongitude()));
         model.addAttribute("edit", true);
+        model.addAttribute("user", u);
         return "buildings/form";
     }
 
     @PostMapping("/{buildingId}/edit")
-    public String editBuilding(@PathVariable Long buildingId, BuildingForm buildingForm, Model model, BindingResult bindingResult) {
+    public String editBuilding(@PathVariable Long buildingId, BuildingForm buildingForm, Model model, BindingResult bindingResult,  @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+        var u = userService.findAdminByEmail(user.getUsername()).orElseThrow();
         if (bindingResult.hasErrors()) {
             model.addAttribute("formError", bindingResult.getFieldError().getDefaultMessage());
             model.addAttribute("edit", true);
             model.addAttribute("buildingId", buildingId);
+            model.addAttribute("user", u);
             return "buildings/form";
         }
         Building building = buildingService.update(buildingId,  buildingForm.name(), buildingForm.address());
         model.addAttribute("updated", true);
+        model.addAttribute("user", u);
         return "redirect:/buildings/"  + building.getId();
     }
 
@@ -160,18 +203,22 @@ public class BuildingController {
 
     @GetMapping("/{buildingId}/assets/new")
     public String assetForm(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+        var u = userService.findAdminByEmail(user.getUsername()).orElseThrow();
         model.addAttribute("assetForm", new AssetForm("","", AssetType.INVERTER,"", CommProtocol.MODBUS,""));
         model.addAttribute("buildingId", buildingId );
+        model.addAttribute("user", u);
         return "assets/form";
     }
 
     @PostMapping("/{buildingId}/assets/new")
     public String addAsset(@PathVariable Long buildingId, Model model, @Valid AssetForm assetForm, BindingResult bindingResult, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+        var u =  userService.findAdminByEmail(user.getUsername()).orElseThrow();
         if(bindingResult.hasErrors()){
             model.addAttribute("formError", bindingResult.getFieldError().getDefaultMessage());
+            model.addAttribute("user", u);
             return "assets/form";
         }
-        var u =  userService.findAdminByEmail(user.getUsername()).orElseThrow();
+
         var b = buildingService.findById(buildingId).orElseThrow();
         assetService.create( u, b, assetForm.name(), assetForm.brand(), assetForm.type(), assetForm.model(), assetForm.commProtocol(), "");
         return "redirect:/buildings/"  + buildingId;
@@ -179,22 +226,26 @@ public class BuildingController {
 
     @GetMapping("/{buildingId}/assets/{assetId}/edit")
     public String assetFormEdit(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user, @PathVariable Long assetId) {
+        var u =  userService.findAdminByEmail(user.getUsername()).orElseThrow();
         Asset asset = assetService.findById(assetId).orElseThrow();
         model.addAttribute("assetForm", new AssetForm(asset.getName(),asset.getBrand(), asset.getType(), asset.getModel(), asset.getCommProtocol(),asset.getEndpoint()));
         model.addAttribute("buildingId", buildingId );
         model.addAttribute("assetId", assetId );
         model.addAttribute("edit", true);
+        model.addAttribute("user", u);
         return "assets/form";
     }
 
     @PostMapping("/{buildingId}/assets/{assetId}/edit")
     public String editAsset(@PathVariable Long buildingId, @PathVariable Long assetId, @Valid AssetForm assetForm, BindingResult bindingResult, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+        var u =  userService.findAdminByEmail(user.getUsername()).orElseThrow();
         if(bindingResult.hasErrors()){
             model.addAttribute("formError", bindingResult.getFieldError().getDefaultMessage());
             model.addAttribute("buildingId", buildingId );
             model.addAttribute("assetId", assetId );
             model.addAttribute("no", "qualcosa da errore");
             model.addAttribute("edit", true);
+            model.addAttribute("user", u);
             return "assets/form";
         }
         var b = buildingService.findById(buildingId).orElseThrow();
@@ -211,56 +262,66 @@ public class BuildingController {
     }
 
     @GetMapping("/{buildingId}/clients/add")
-    public String clientForm(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal User user) {
+    public String clientForm(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+        var u = userService.findAdminByEmail(user.getUsername()).orElseThrow();
         model.addAttribute("objectForm", new RegisterForm("","","","", null, ""));
         model.addAttribute("buildingId", buildingId );
         model.addAttribute("edit", false);
         model.addAttribute("client", true);
-        return "user/form";
+        model.addAttribute("user", u);
+        return "user/clientForm";
     }
 
     @PostMapping("/{buildingId}/clients/add")
-    public String addClient(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal User user, @Valid RegisterForm registerForm, BindingResult result) {
+    public String addClient(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user, @Valid RegisterForm registerForm, BindingResult result) {
+        var u = userService.findAdminByEmail(user.getUsername()).orElseThrow();
         if(result.hasErrors()){
             model.addAttribute("formError", result.getFieldError().getDefaultMessage());
             model.addAttribute("buildingId", buildingId );
             model.addAttribute("edit", false);
             model.addAttribute("client", true);
-            return "user/form";
+            model.addAttribute("user", u);
+            return "user/clientForm";
         }
         Building building = buildingService.findById(buildingId).orElseThrow();
         Client client = userService.createClient(registerForm.name(), registerForm.surname(), registerForm.email(), registerForm.password(), building, registerForm.birthDate(), registerForm.cellphone());
         building.addClient(client);
         buildingService.save(building);
         model.addAttribute("created", true);
+        model.addAttribute("user", u);
         return "redirect:/buildings/"  + buildingId;
 
     }
 
     @GetMapping("/{buildingId}/clients/{clientId}/edit")
     public String clientFormEdit(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user, @PathVariable Long clientId) {
+        var u = userService.findAdminByEmail(user.getUsername()).orElseThrow();
         Client client = userService.findClientById(clientId).orElseThrow();
         model.addAttribute("objectForm", new RegisterForm(client.getName(), client.getSurname(), client.getEmail(), "", client.getBirthDate(), client.getCellphone()));
         model.addAttribute("buildingId", buildingId );
         model.addAttribute("clientId", clientId );
         model.addAttribute("client", true);
         model.addAttribute("edit", true);
-        return "user/form";
+        model.addAttribute("user", u);
+        return "user/clientForm";
     }
 
     @PostMapping("/{buildingId}/clients/{clientId}/edit")
     public String editClient(@PathVariable Long clientId, @PathVariable Long buildingId, @Valid RegisterForm registerForm, BindingResult bindingResult, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user, RedirectAttributes ra) {
+        var u = userService.findAdminByEmail(user.getUsername()).orElseThrow();
         if(bindingResult.hasErrors()){
             model.addAttribute("formError", bindingResult.getFieldError().getDefaultMessage());
             model.addAttribute("buildingId", buildingId );
             model.addAttribute("clientId", clientId );
             model.addAttribute("edit", true);
             model.addAttribute("client", true);
-            return "assets/form";
+            model.addAttribute("user", u);
+            return "user/clientForm";
         }
         Building building = buildingService.findById(buildingId).orElseThrow();
         userService.updateClient(clientId, registerForm.name(), registerForm.surname(), registerForm.email(), registerForm.password(), building, registerForm.birthDate(), registerForm.cellphone());
         ra.addAttribute("updated", true);
+        model.addAttribute("user", u);
         return "redirect:/buildings/"  + buildingId;
     }
 
@@ -269,6 +330,25 @@ public class BuildingController {
         userService.deleteClient(clientId);
         model.addAttribute("deleted", true);
         return "redirect:/buildings/"  + buildingId;
+    }
+
+    @GetMapping("/map")
+    public String showMap(Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) throws Exception {
+        var u = userService.findAdminByEmail(user.getUsername()).orElseThrow();
+
+        List<BuildingMapDTO> buildingsDto = buildingService.findAll()
+                .stream()
+                .map(b -> new BuildingMapDTO(b.getId(), b.getName(), b.getLatitude(), b.getLongitude()))
+                .toList();
+
+        // Serializza in JSON
+        ObjectMapper mapper = new ObjectMapper();
+        String buildingsJson = mapper.writeValueAsString(buildingsDto);
+
+        model.addAttribute("buildingsJson", buildingsJson);
+        model.addAttribute("user", u);
+
+        return "buildings/map";
     }
 
 

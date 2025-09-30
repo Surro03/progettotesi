@@ -53,6 +53,9 @@ body{
     color:var(--text);
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
 }
 
 /* Accessibility focus outline */
@@ -151,7 +154,7 @@ textarea{min-height:92px;resize:vertical}
 .fab.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:rgba(0,0,0,0.85)}
 
 /* Table */
-.table{width:150%;border-collapse:collapse;font-size:0.95rem}
+.table{width:100%;border-collapse:collapse;font-size:0.95rem}
 .table th, .table td{padding:15px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.03)}
 .table th{font-weight:600;color:var(--muted);font-size:0.85rem}
 .table tr:hover td{background:linear-gradient(90deg, rgba(255,255,255,0.01), transparent)}
@@ -329,6 +332,7 @@ textarea{min-height:92px;resize:vertical}
 
 
 .details {
+    flex: 1;
     max-width: 500px;
     margin: 20px auto;
     padding: 16px;
@@ -357,5 +361,95 @@ textarea{min-height:92px;resize:vertical}
 .value {
     color: var(--text);
 }
+
+
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: var(--surface, #fff);
+    min-width: 160px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    border-radius: 6px;
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: var(--text, #000);
+    padding: 10px 14px;
+    display: block;
+    text-decoration: none;
+}
+
+.dropdown-content a:hover {
+    background-color: rgba(0,0,0,0.05);
+}
+
+/* Quando JS aggiunge questa classe, mostra il menu */
+.dropdown-content.show {
+    display: block;
+}
+
+.sections-row {
+    display: flex;         /* le sezioni diventano orizzontali */
+    gap: 20px;             /* spazio fra le sezioni */
+    margin: 20px;
+    justify-content: center ;
+    align-items: center;
+
+}
+
+.sections-row .card {
+    flex: 1;               /* ogni sezione prende lo stesso spazio */
+    min-width: 280px;      /* così non diventano troppo strette */
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--elev-1);
+}
+
+#clientTableContainer {
+    overflow-x: auto;
+}
+
+#clientTableContainer table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+
+#map {
+    flex: 2;
+    height: 500px;
+    width: 750px;
+    margin: 0 auto;
+    border-radius: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+.sections-row .details {
+    flex: 1;
+    max-width: 400px;
+    margin-left: auto;
+}
+
+.sections-row .map-container {
+    flex: 2;
+    max-width: 400px;
+    margin-right: auto;
+}
+
+.sections-row #map {
+    flex: 0 0 auto;
+    height: 200px;
+    border-radius: 12px;
+    width: 200px;
+}
+
 
 /* End of file */

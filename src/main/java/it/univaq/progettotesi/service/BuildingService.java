@@ -40,8 +40,8 @@ public class BuildingService {
         return buildingRepository.findByAdmin_Id(id, pageable);
     }
 
-    public Building create(Admin user, String name, String address) {
-        Building b = new Building(user, name, address);
+    public Building create(Admin user, String name, String address, String energeticClass, Integer apartments, Integer yearOfConstruction, Integer numbersOfFloors, Double surface, Double latitude, Double longitude) {
+        Building b = new Building(user, name, address, energeticClass, apartments, yearOfConstruction, numbersOfFloors, surface, latitude, longitude);
         return buildingRepository.save(b);
     }
 

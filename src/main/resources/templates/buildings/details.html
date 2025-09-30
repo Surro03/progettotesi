@@ -2,254 +2,125 @@
 <html lang="it" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
-    <link th:href="@{/css/style.css}" rel="stylesheet" />
     <title>Dettagli edificio</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/2.2.0/Control.FullScreen.min.css"/>
+    <link rel="stylesheet" th:href="@{/css/prova.css}" />
+    <script>
+        const buildingId = [[${building.id}]];
+    </script>
+    <script th:src="@{/javascript/prova.js}" defer></script>
+    <script th:src="@{/javascript/assets.js}" defer></script>
+    <script th:src="@{/javascript/clients.js}" defer></script>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
 </head>
+
 <body>
+<div th:replace="topbar :: topbar"></div>
 
-<h1>Dettagli edificio</h1>
+<h1 style="text-align: center">Dettagli edificio</h1>
 
-<section>
-    <p><strong>ID:</strong> <span th:text="${building.id}">1</span></p>
-    <p><strong>Nome:</strong> <span th:text="${building.name}">Edificio A</span></p>
-    <p><strong>Indirizzo:</strong> <span th:text="${building.address}">Via Roma 1</span></p>
-    <p><strong>Email Admin:</strong> <span th:text="${building.admin.email}">mario.rossi@email.com</span></p>
-    <p><strong>Classe Energetica:</strong> <span th:text="${building.getEnergeticClass}">A2</span></p>
-    <p><strong>Unità Abitative:</strong> <span th:text="${building.getApartments}">1</span></p>
-    <p><strong>Anno di Costruzione: </strong> <span th:text="${building.yearOfConstruction}">1890</span></p>
-    <p><strong>Numero di piani:</strong> <span th:text="${building.numbersOfFloors}">3</span></p>
-    <p><a th:href="@{|/buildings/${buildingId}/edit|}">Modifica</a></p>
-</section>
+<div class="card sections-row">
 
-<button type="button"
-        th:onclick="|location.href='@{/buildings/{buildingId}/config(buildingId=${building.id})}'|">
-    Test JSON configurazione
-</button>
+    <section class=" details">
+        <div class="detail-row">
+            <span class="label">ID:</span>
+            <span class="value" th:text="${building.id}">1</span>
+        </div>
+        <div class="detail-row">
+            <span class="label">Nome:</span>
+            <span class="value" th:text="${building.name}">Edificio A</span>
+        </div>
+        <div class="detail-row">
+            <span class="label">Indirizzo:</span>
+            <span class="value" th:text="${building.address}">Via Roma 1</span>
+        </div>
+        <div class="detail-row">
+            <span class="label">Email Admin:</span>
+            <span class="value" th:text="${building.admin.email}">mario.rossi@email.com</span>
+        </div>
+        <div class="detail-row">
+            <span class="label">Classe Energetica:</span>
+            <span class="value" th:text="${building.getEnergeticClass}">A2</span>
+        </div>
+        <div class="detail-row">
+            <span class="label">Unità Abitative:</span>
+            <span class="value" th:text="${building.getApartments}">1</span>
+        </div>
+        <div class="detail-row">
+            <span class="label">Anno di Costruzione:</span>
+            <span class="value" th:text="${building.yearOfConstruction}">1890</span>
+        </div>
+        <div class="detail-row">
+            <span class="label">Numero di Piani:</span>
+            <span class="value" th:text="${building.numbersOfFloors}">3</span>
+        </div>
 
-<hr/>
-<div th:if="${updated}">
-    Elemento aggiornato con successo
+        <p class="btn-row">
+            <a class="link" th:href="@{|/buildings/${buildingId}/edit|}">Modifica</a>
+            <a class="link" href="/buildings">← Torna all'elenco edifici</a>
+        </p>
+    </section>
+
+        <section class=" map-container">
+            <div id="buildings-data"
+                 th:attr="data-buildings=${buildingsJson}"></div>
+
+            <div id="map"></div>
+        </section>
+
 </div>
-<section>
-    <h2>Asset dell'edificio</h2>
 
-    <!-- Messaggio se la lista è vuota -->
-    <div th:if="${assetsPage.totalElements == 0}">
-        Non ci sono asset presenti nell'edificio
-    </div>
-    <!-- Tabella asset se presenti -->
-    <div th:if="${assetsPage.totalElements > 0}">
 
-        <p><strong>Totale:</strong> <span th:text="${assetsPage.totalElements}">0</span></p>
+<div class="sections-row">
+    <!-- <button type="button"
+            th:onclick="|location.href='@{/buildings/{buildingId}/config(buildingId=${building.id})}'|">
+        Test JSON configurazione
+    </button> -->
 
-        <table id="assetTable">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th scope="col">
-                    <a th:with="isDesc=${param.assets_sort != null and #strings.contains(param.assets_sort,'name,desc')},
-                             nextDir=${isDesc ? 'asc' : 'desc'}"
-                       th:href="@{/buildings/{buildingId}(buildingId=${building.id}, assets_sort='name,'+${nextDir})}">
-                        Nome
-                    </a>
-                </th>
-                <th scope="col">
-                    <a th:with="isDesc=${param.assets_sort != null and #strings.contains(param.assets_sort,'brand,desc')},
-                             nextDir=${isDesc ? 'asc' : 'desc'}"
-                       th:href="@{/buildings/{buildingId}(buildingId=${building.id}, assets_sort='brand,'+${nextDir})}">
-                        Marca
-                    </a>
-                </th>
-                <th>Tipo</th>
-                <th>Modello</th>
-                <th scope="col">
-                    <a th:with="isDesc=${param.assets_sort != null and #strings.contains(param.assets_sort,'commProtocol,desc')},
-                             nextDir=${isDesc ? 'asc' : 'desc'}"
-                       th:href="@{/buildings/{buildingId}(buildingId=${building.id}, assets_sort='commProtocol,'+${nextDir})}">
-                        Protocollo di comunicazione
-                    </a>
-                </th>
-                <th>Endpoint</th>
-                <th>Azioni</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="a : ${assetsPage}">
-                <td th:text="${a.id}">10</td>
-                <td th:text="${a.name}">Inverter 1</td>
-                <td th:text="${a.brand}">BrandX</td>
-                <td th:text="${a.type}">INVERTER</td>
-                <td th:text="${a.model}">X1000</td>
-                <td th:text="${a.commProtocol}">MODBUS</td>
-                <td th:text="${a.endpoint}">192.168.1.10:502</td>
-                <td class="actions-cell">
-                    <form th:action="@{/buildings/{buildingId}/assets/{assetId}/delete(buildingId=${building.id},assetId=${a.id})}" method="post" class="actions-item" onsubmit="return confirm('Eliminare questo asset?');">
-                        <button type="submit">Elimina Asset</button>
-                    </form>
-                    <button type="button" class="actions-item"
-                            th:onclick="|location.href='@{/buildings/{buildingId}/assets/{assetId}/edit(buildingId=${building.id},assetId=${a.id})}'|">
-                        Modifica Asset
-                    </button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+    <section class="card">
+        <h2>Asset dell'edificio</h2>
 
-        <nav aria-label="Paginazione" class="pager">
-            <div class="pager-compact">
-                <a th:if="${assetsPage.hasPrevious()}"
-                   th:href="@{/buildings/{buildingId}(buildingId=${building.id}, assets_page=${assetsPage.number-1}, assets_size=${assetsPage.size}, assets_sort=${param.assets_sort})}">❮</a>
-                <span th:unless="${assetsPage.hasPrevious()}" class="disabled">❮</span>
+        <div id="assetTableContainer"></div>
+        <div id="assetPager" class="pager"></div>
+        <div id="assetInfo" class="pager-info"></div>
 
-                <a th:text="${assetsPage.number+1}">1</a>
+        <select style="width: 15%" id="assetPageSizeSelect" onchange="changeAssetPageSize(buildingId)">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="25">25</option>
+        </select>
 
-                <a th:if="${assetsPage.hasNext()}"
-                   th:href="@{/buildings/{buildingId}(buildingId=${building.id}, assets_page=${assetsPage.number+1}, assets_size=${assetsPage.size}, assets_sort=${param.assets_sort})}">❯</a>
-                <span th:unless="${assetsPage.hasNext()}" class="disabled">❯</span>
-            </div>
-        </nav>
+        <button class="btn btn-primary" type="button" th:onclick="|location.href='@{/buildings/{buildingId}/assets/new(buildingId=${building.id})}'|" >
+            Aggiungi Asset
+        </button>
+    </section>
 
-        <span class="pager-info">
-      Stai vedendo i risultati dall'
-      <strong th:text="${assetsPage.number * assetsPage.size + 1}">1</strong> al
-      <strong th:text="${(assetsPage.number + 1) * assetsPage.size > assetsPage.totalElements ? assetsPage.totalElements : (assetsPage.number + 1) * assetsPage.size}">1</strong>
-      di totale <strong th:text="${assetsPage.totalElements}">0</strong> <span th:text="${assetsPage.totalElements == 1 ? 'risultato' : 'risultati'}">risultati</span>
-    </span>
+    <section class="card">
+        <h2>Inquilini dell'edificio</h2>
 
-    </div>
-    <button type="button"
-            th:onclick="|location.href='@{/buildings/{buildingId}/assets/new(buildingId=${building.id})}'|">
-        Aggiungi asset
-    </button>
-</section>
+        <div id="clientTableContainer"></div>
+        <div id="clientPager" class="pager"></div>
+        <div id="clientInfo" class="pager-info"></div>
 
+        <select style="width: 15%" id="clientPageSizeSelect" onchange="changeClientPageSize(buildingId)">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="25">25</option>
+        </select>
+
+        <button class="btn btn-primary" type="button" th:onclick="|location.href='@{/buildings/{buildingId}/clients/add(buildingId=${building.id})}'|">Aggiungi Cliente</button>
+    </section>
+
+
+</div>
 
 <hr/>
 
-<section>
-    <h2>Inquilini dell'edificio</h2>
-
-    <!-- Messaggio se la lista è vuota -->
-    <div th:if="${clientsPage == null or clientsPage.totalElements == 0}">
-        L'edificio non ha inquilini
-    </div>
-
-    <!-- Tabella clienti se presenti -->
-    <div th:if="${clientsPage != null and clientsPage.totalElements > 0}">
-        <p><strong>Totale:</strong> <span th:text="${clientsPage.totalElements}">0</span></p>
-
-        <table id="clientTable">
-            <thead>
-            <tr>
-                <th>ID</th>
-
-                <!-- NOME: toggle asc/desc su clients_sort -->
-                <th scope="col">
-                    <a th:with="
-                           isDesc=${param.clients_sort != null and #strings.contains(param.clients_sort,'name,desc')},
-                           isAsc=${param.clients_sort != null and #strings.contains(param.clients_sort,'name,asc')},
-                           nextDir=${isDesc} ? 'asc' : 'desc'"
-                       th:href="@{/buildings/{buildingId}(
-                                 buildingId=${building.id},
-                                 clients_page=${0},
-                                 clients_size=${clientsPage.size},
-                                 clients_sort=${'name,'+nextDir}
-                               )}">
-                        Nome
-
-                    </a>
-                </th>
-
-                <!-- COGNOME: toggle asc/desc su clients_sort -->
-                <th scope="col">
-                    <a th:with="
-                           isDesc=${param.clients_sort != null and #strings.contains(param.clients_sort,'surname,desc')},
-                           isAsc=${param.clients_sort != null and #strings.contains(param.clients_sort,'surname,asc')},
-                           nextDir=${isDesc} ? 'asc' : 'desc'"
-                       th:href="@{/buildings/{buildingId}(
-                                 buildingId=${building.id},
-                                 clients_page=${0},
-                                 clients_size=${clientsPage.size},
-                                 clients_sort=${'surname,'+nextDir}
-                               )}">
-                        Cognome
-                    </a>
-                </th>
-
-                <th>Email</th>
-                <th>Data di Nascita</th>
-                <th>Numero di Cellulare</th>
-                <th>Azioni</th>
-            </tr>
-            </thead>
-
-            <tbody>
-            <tr th:each="c : ${clients}">
-                <td th:text="${c.id}">10</td>
-                <td th:text="${c.name}">Mario</td>
-                <td th:text="${c.surname}">Rossi</td>
-                <td th:text="${c.email}">mario.rossi@example.com</td>
-                <td th:text="${c.birthDate}">12/12/2012</td>
-                <td th:text="${c.cellphone}">+3780544434</td>
-                <td class="actions-cell">
-                    <form th:action="@{/buildings/{buildingId}/clients/{clientId}/delete(buildingId=${building.id}, clientId=${c.id})}"
-                          method="post" class="actions-item"
-                          onsubmit="return confirm('Eliminare questo cliente?');">
-                        <button type="submit">Elimina Cliente</button>
-                    </form>
-
-                    <button type="button" class="actions-item"
-                            th:onclick="|location.href='@{/buildings/{buildingId}/clients/{clientId}/edit(buildingId=${building.id}, clientId=${c.id})}'|">
-                        Modifica Cliente
-                    </button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-
-        <!-- (Opzionale) Paginazione semplice per i clienti -->
-        <nav aria-label="Paginazione Clienti" class="pager">
-            <div class="pager-compact">
-                <!-- Precedente -->
-                <a th:if="${clientsPage.hasPrevious()}"
-                   th:href="@{/buildings/{buildingId}(
-                        buildingId=${building.id},
-                        clients_page=${clientsPage.number-1},
-                        clients_size=${clientsPage.size},
-                        clients_sort=${param.clients_sort} ?: 'name,desc'
-                    )}">❮</a>
-                <span th:unless="${clientsPage.hasPrevious()}" class="disabled">❮</span>
-
-                <!-- Pagina Attuale -->
-                <a th:text="${clientsPage.number+1}">1</a>
-
-                <!-- Successiva -->
-                <a th:if="${clientsPage.hasNext()}"
-                   th:href="@{/buildings/{buildingId}(
-                        buildingId=${building.id},
-                        clients_page=${clientsPage.number+1},
-                        clients_size=${clientsPage.size},
-                        clients_sort=${param.clients_sort} ?: 'name,desc'
-                    )}">❯</a>
-                <span th:unless="${clientsPage.hasNext()}" class="disabled">❯</span>
-            </div>
-        </nav>
-
-    </div>
-
-    <button type="button"
-            th:onclick="|location.href='@{/buildings/{buildingId}/clients/add(buildingId=${building.id})}'|">
-        Aggiungi Cliente
-    </button>
-</section>
-
-
-
-<hr/>
-
-<p>
-    <a href="/buildings">← Torna all'elenco edifici</a>
-</p>
-
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/2.2.0/Control.FullScreen.min.js"></script>
+<script th:src="@{/javascript/map.js}" defer></script>
 </body>
 </html>

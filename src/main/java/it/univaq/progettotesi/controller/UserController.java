@@ -1,7 +1,9 @@
 package it.univaq.progettotesi.controller;
 
 import it.univaq.progettotesi.config.MyUserDetailsService;
+import it.univaq.progettotesi.entity.User;
 import it.univaq.progettotesi.forms.RegisterForm;
+import it.univaq.progettotesi.forms.UpdateClientForm;
 import it.univaq.progettotesi.forms.UpdateForm;
 import it.univaq.progettotesi.service.BuildingService;
 import it.univaq.progettotesi.service.UserService;
@@ -45,6 +47,7 @@ public class UserController {
         model.addAttribute("objectForm", new UpdateForm(u.getName(), u.getSurname() ,u.getEmail(), "", "", u.getBirthDate(), u.getCellphone()));
         model.addAttribute("client",false);
         model.addAttribute("edit", false);
+        model.addAttribute("user", u);
         return "user/form";
     }
 
@@ -142,5 +145,99 @@ public class UserController {
     }
 
 
+    // Nuovo cliente
+    @GetMapping("/new")
+    public String newClientForm(Model model, @RequestParam Long buildingId, User user) {
+        var u = userService.findAdminByEmail(user.getUsername()).orElseThrow();
+        model.addAttribute("objectForm", new RegisterForm("", "", "", "", null, ""));
+        model.addAttribute("buildingId", buildingId);
+        model.addAttribute("edit", false);
+        model.addAttribute("user", u);
+        return "user/client_form";
+    }
+
+    @PostMapping("/new")
+    public String createClient(
+            @Valid @ModelAttribute("objectForm") RegisterForm form,
+            BindingResult bindingResult,
+            @RequestParam Long buildingId,
+            Model model) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("buildingId", buildingId);
+            model.addAttribute("edit", false);
+            return "user/client_form";
+        }
+
+        if (userService.existsClientByEmail(form.email())) {
+            bindingResult.rejectValue("email", "email.taken", "Email già in uso");
+            model.addAttribute("buildingId", buildingId);
+            model.addAttribute("edit", false);
+            return "user/client_form";
+        }
+
+        var building = buildingService.findById(buildingId)
+                .orElseThrow(() -> new IllegalArgumentException("Building non trovato: " + buildingId));
+
+        userService.createClient(
+                form.name(),
+                form.surname(),
+                form.email(),
+                form.password(),
+                building,
+                form.birthDate(),
+                form.cellphone()
+        );
+
+        return "redirect:/buildings/" + buildingId;
+    }
+
+    // Modifica cliente
+    @GetMapping("/{id}/edit")
+    public String editClientForm(@PathVariable Long id, Model model) {
+        var client = userService.findClientById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Cliente non trovato: " + id));
+
+        model.addAttribute("objectForm", new UpdateForm(
+                client.getName(),
+                client.getSurname(),
+                client.getEmail(),
+                "", "", // password vuota per edit
+                client.getBirthDate(),
+                client.getCellphone()
+        ));
+        model.addAttribute("buildingId", client.getBuilding().getId());
+        model.addAttribute("edit", true);
+        model.addAttribute("formAction", "/user/" + id + "/edit");
+        return "user/client_form";
+    }
+
+    @PostMapping("/{id}/edit")
+    public String updateClient(
+            @PathVariable Long id,
+            @Valid @ModelAttribute("objectForm") UpdateClientForm form,
+            BindingResult bindingResult,
+            @RequestParam Long buildingId,
+            Model model) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("buildingId", buildingId);
+            model.addAttribute("edit", true);
+            return "user/client_form";
+        }
+
+        userService.updateClient(
+                id,
+                form.name(),
+                form.surname(),
+                form.email(),
+                form.password(), // se vuoi modificare password, altrimenti lascia vuoto
+                buildingService.findById(buildingId).orElseThrow(),
+                form.birthDate(),
+                form.cellphone()
+        );
+
+        return "redirect:/buildings/" + buildingId;
+    }
 }
 

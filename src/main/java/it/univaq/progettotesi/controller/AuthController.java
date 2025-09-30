@@ -55,13 +55,8 @@ public class AuthController {
     @GetMapping("/")
     public String index(Model model, @AuthenticationPrincipal User user) {
         model.addAttribute("user", user);
-        return "redirect:/home";
+        return "redirect:/buildings";
     }
 
-    @GetMapping("/home")
-    public String home(Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
-        var u = service.findAdminByEmail(user.getUsername()).orElse(null);
-        model.addAttribute("user", u);
-        return "home";
-    }
+
 }

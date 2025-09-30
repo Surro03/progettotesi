@@ -2,24 +2,12 @@
 <html lang="it" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${client} ? 'Aggiungi Cliente' : 'Modifica Utente'">Form Utente</title>
+    <title th:text="'Modifica Utente'">Form Utente</title>
     <link rel="stylesheet" th:href="@{/css/prova.css}" />
+    <script th:src="@{/javascript/prova.js}" defer></script>
 </head>
 <body>
-<header class="topbar">
-    <div class="brand">
-        <span class="logo">BIM</span>
-        <span>Account</span>
-    </div>
-    <nav class="topnav">
-        <a th:href="@{/home}">Home</a>
-        <a th:href="@{/buildings}">Edifici</a>
-        <a th:href="@{/user/details}">Profilo</a>
-        <form th:action="@{/logout}" method="post" style="display:inline;">
-            <button type="submit" class="logout-btn">Logout</button>
-        </form>
-    </nav>
-</header>
+<div th:replace="topbar :: topbar"></div>
 <h1 style="text-align: center">Modifica Account</h1>
 
 <section class="card">
@@ -31,11 +19,11 @@
                          : @{/user/edit})">
 
             <form th:action="${formAction}"
-                  th:object="${registerForm}"
+                  th:object="${objectForm}"
                   method="post" autocomplete="on">
 
 
-                <table class="table">
+                <table class="table" id="userEditTable" style="width: 150%">
                     <tr>
                         <td><label for="name">Nome:</label></td>
                         <td><input class="input" id="name" type="text" th:field="*{name}" autocomplete="given-name"
@@ -58,13 +46,20 @@
                     </tr>
 
                     <tr>
-                        <td><label for="password">Password:</label></td>
+                        <td><label for="oldPassword">Vecchia Password:</label></td>
                         <td>
-                            <input class="input" id="password" type="password" th:field="*{password}" autocomplete="new-password"
-                                   th:attr="placeholder=${client} ? 'Inserisci la password' : 'Lascia vuoto per non cambiare',
-                                    required=${client}"/>
+                            <input class="input" id="oldPassword" type="password" th:field="*{oldPassword}" autocomplete="current-password"
+                                   placeholder="Password attuale (solo per cambiarla)"/>
                         </td>
-                        <td th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Errore password</td>
+                        <td th:if="${#fields.hasErrors('oldPassword')}" th:errors="*{oldPassword}">Errore vecchia password</td>
+                    </tr>
+                    <tr>
+                        <td><label for="newPassword">Nuova Password:</label></td>
+                        <td>
+                            <input class="input" id="newPassword" type="password" th:field="*{newPassword}" autocomplete="new-password"
+                                   placeholder="Lascia vuoto per non cambiare"/>
+                        </td>
+                        <td th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}">Errore nuova password</td>
                     </tr>
 
                     <tr>
@@ -87,18 +82,11 @@
                     </tr>
 
                     <tr>
-                        <td colspan="3" th:if="${client} and !${edit}">
-                            <button type="submit">Aggiungi Cliente</button>
-                        </td>
-                        <td colspan="3" th:if="${edit} and ${client}">
-                            <button type="submit">Modifica Cliente</button>
-                        </td>
+
                         <td colspan="3" th:if="${!client}">
                             <div class="btn-row">
                                 <button class="btn btn-primary" type="submit">Modifica Account</button>
-                                <a  class="link" th:href="${client}
-             ? @{/buildings/{buildingId}(buildingId=${buildingId})}
-             : @{/user/details}">
+                                <a  class="link" th:href="@{/user/details}">
                                     Annulla
                                 </a>
                             </div>

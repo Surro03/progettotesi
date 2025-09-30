@@ -29,7 +29,7 @@ public class WebSecurityConfig {
                                 .loginProcessingUrl("/authenticate") // URL che Spring usa per il POST
                                 .usernameParameter("email")
                                 .passwordParameter("password")
-                                .defaultSuccessUrl("/home", true)    // redirect dopo login
+                                .defaultSuccessUrl("/buildings", true)    // redirect dopo login
                                 .failureUrl("/login?error=true")     // redirect in caso di errore
                         )
                         .logout(logout -> logout

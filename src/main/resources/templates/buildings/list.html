@@ -3,10 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>I miei edifici</title>
+    <link rel="stylesheet" th:href="@{/css/prova.css}" />
     <script th:src="@{/javascript/script.js}" defer></script>
+    <script th:src="@{/javascript/prova.js}" defer></script>
+    <script th:src="@{/javascript/buildings.js}" defer></script>
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
 </head>
 <body>
-
+<div th:replace="topbar :: topbar"></div>
 <h1>I tuoi edifici</h1>
 
 <!-- Stato "nessun risultato" -->
@@ -15,88 +21,40 @@
     <p><a th:href="@{/buildings/new}">Aggiungi un edificio</a></p>
 </div>
 
-<!-- Tabella -->
-<div th:if="${page.totalElements > 0}">
-    <table id="buildingTable">
-        <thead>
-        <tr>
-            <th scope="col">
-                <a th:with="isDesc=${param.sort != null and #strings.contains(param.sort,'name,desc')},
-                     nextDir=${isDesc} ? 'asc' : 'desc'"
-                   th:href="@{/buildings(page=0, size=${page.size}, sort=${'name,'+nextDir})}">
-                    Nome
-                </a>
-            </th>
-            <th scope="col">
-                <a th:with="isDesc=${param.sort != null and #strings.contains(param.sort,'address,desc')},
-                     nextDir=${isDesc} ? 'asc' : 'desc'"
-                   th:href="@{/buildings(page=0, size=${page.size}, sort=${'address,'+nextDir})}">
-                    Indirizzo
-                </a>
-            </th>
-            <th scope="col">Azioni</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="b : ${buildings}" th:attr="data-default-href=@{|/buildings/${b.id}|}">
-            <td th:text="${b.name}">Nome</td>
-            <td th:text="${b.address}">Indirizzo</td>
-            <td>
-                <a th:href="@{|/buildings/${b.id}|}">Visualizza dettagli</a>
-                <form th:action="@{|/buildings/${b.id}/delete|}" method="post" style="display:inline">
-                    <button type="submit" onclick="return confirm('Eliminare questo edificio?');">Elimina</button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+<section class="card">
+    <div id="buildingTableContainer">
+        <table class="table">
+            <thead>
+            <tr>
+                <th><button onclick="changeSort('name')">Nome</button></th>
+                <th><button onclick="changeSort('address')">Indirizzo</button></th>
+                <th>Azioni</th>
+            </tr>
+            </thead>
+            <tbody id="buildingTableBody">
+            <!-- righe generate via JS -->
+            </tbody>
 
-    <!-- Pager compatto -->
-    <nav aria-label="Paginazione" class="pager">
-        <div class="pager-compact">
-            <!-- Precedente -->
-            <a th:if="${page.hasPrevious()}"
-               th:href="@{/buildings(page=${page.number-1}, size=${page.size}, sort=${param.sort})}">❮</a>
-            <span th:unless="${page.hasPrevious()}" class="disabled">❮</span>
+        </table>
+    </div>
+    <div class="page-size">
+        <label>Per pagina:
+            <select style="width: 10%" id="pageSizeSelect" onchange="changePageSize()">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+            </select>
+        </label>
+    </div>
 
-            <!-- Numero pagina corrente (1-based) -->
-            <span th:text="${page.number+1}">1</span>
+    <nav id="pagerContainer" class="pager"></nav>
+</section>
 
-            <!-- Successiva -->
-            <a th:if="${page.hasNext()}"
-               th:href="@{/buildings(page=${page.number+1}, size=${page.size}, sort=${param.sort})}">❯</a>
-            <span th:unless="${page.hasNext()}" class="disabled">❯</span>
-        </div>
 
-        <!-- Info "mostra X–Y di Z" -->
-        <span class="pager-info">
-          Stai vedendo i risultati dall'
-          <strong th:text="${page.totalElements == 0 ? 0 : page.number*page.size + 1}">1</strong> al
-          <strong th:text="${ ((page.number+1)*page.size) > page.totalElements ? page.totalElements : ((page.number+1)*page.size) }">1</strong>
-          di totale <strong th:text="${page.totalElements}">0</strong> <span th:text="${page.totalElements} == 1  ? 'risultato' : 'risultati'">risultato</span>
-        </span>
 
-        <!-- Cambio size (preserva sort e pagina) -->
-        <form method="get" th:action="@{/buildings}" class="page-size">
-            <input type="hidden" name="page" th:value="${page.number}"/>
-            <input type="hidden" name="sort" th:value="${param.sort}"/>
-            <label>Per pagina:
-                <select name="size" onchange="this.form.submit()">
-                    <option th:each="s : ${new int[]{5,10,25,50,100}}"
-                            th:value="${s}"
-                            th:selected="${s} == ${page.size}"
-                            th:text="${s}">10</option>
-                </select>
-            </label>
-        </form>
-    </nav>
-</div>
-<button type="button" th:onclick="|location.href='@{/buildings/new}'|">
+<button class="btn btn-primary" type="button" th:onclick="|location.href='@{/buildings/new}'|">
     Nuovo Edificio
-</button>
-
-<button type="button" th:onclick="|location.href='@{/home}'|">
-    Torna alla home
 </button>
 
 </body>
