@@ -179,7 +179,8 @@ public class BuildingController {
             return "assets/form"; // torno al form con errore
         }
         Client c = client.get();
-        assetService.create( u, b, assetForm.name(), assetForm.brand(), assetForm.type(), assetForm.model(), assetForm.commProtocol(), c);
+        Asset asset = assetService.create( u, b, assetForm.name(), assetForm.brand(), assetForm.type(), assetForm.model(), assetForm.commProtocol(), c);
+        b.addAsset(asset);
         return "redirect:/buildings/"  + buildingId;
     }
 

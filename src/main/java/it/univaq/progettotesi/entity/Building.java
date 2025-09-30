@@ -23,6 +23,10 @@ public class Building {
     @Getter @Setter
     private List<Client> clients = new ArrayList<>();
 
+    @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Getter @Setter
+    private List<Asset> assets = new ArrayList<>();
+
     // molti building per un admin
     @ManyToOne
     @JoinColumn(name = "admin_id", nullable = false)
@@ -93,6 +97,9 @@ public class Building {
         this.clients.add(client);
     }
 
+    public void addAsset(Asset asset) {
+        this.assets.add(asset);
+    }
 
     @Override
     public boolean equals(Object o) {
