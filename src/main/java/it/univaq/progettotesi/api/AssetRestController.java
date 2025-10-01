@@ -35,11 +35,18 @@ public class AssetRestController {
 
     @PostMapping
     public ResponseEntity<AssetDTO> createAsset(@RequestBody AssetDTO dto) {
+
         var admin = userService.findAdminByEmail(dto.getAdminEmail());
-        if (admin.isEmpty()) throw new RuntimeException("Admin non trovato");
+        if (admin.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(null);
+        }
 
         var client = userService.findByClientEmail(dto.getClientEmail());
-        if (client.isEmpty()) throw new RuntimeException("Client non trovato");
+        if (client.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(null);
+        }
 
         Asset asset = assetService.create(
                 admin.get(),
@@ -52,13 +59,11 @@ public class AssetRestController {
                 client.get()
         );
 
-        AssetDTO responseDto = assetMapper.toDto(asset);
-
-        // Restituisce 201 Created + il body con l’oggetto creato
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(responseDto);
+                .status(HttpStatus.CREATED) // 201 Created
+                .body(assetMapper.toDto(asset));
     }
+
 
 
     // PUT /app/api/assets/{id}
