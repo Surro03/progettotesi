@@ -28,10 +28,9 @@ public class AssetRestController {
 
     // GET /api/assets/{id}
     @GetMapping("/{id}")
-    public AssetDTO getAsset(@PathVariable Long id) {
-        Asset asset = assetService.findById(id)
-                .orElseThrow(() -> new RuntimeException("Asset non trovato"));
-        return assetMapper.toDto(asset);
+    public ResponseEntity<AssetDTO> getAsset(@PathVariable Long id) {
+        return assetService.findById(id).map(entity -> ResponseEntity.ok(assetMapper.toDto(entity)))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
