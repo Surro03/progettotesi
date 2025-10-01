@@ -61,22 +61,33 @@ public class AssetRestController {
     }
 
 
-    // PUT /api/assets/{id}
+    // PUT /app/api/assets/{id}
     @PutMapping("/{id}")
-    public Asset updateAsset(@PathVariable Long id, @RequestBody Asset asset) {
-        Asset existing = assetService.findById(id)
-                .orElseThrow(() -> new RuntimeException("Asset non trovato"));
-        existing.setName(asset.getName());
-        existing.setBrand(asset.getBrand());
-        existing.setType(asset.getType());
-        existing.setModel(asset.getModel());
-        existing.setCommProtocol(asset.getCommProtocol());
-        return assetService.save(existing);
+    public ResponseEntity<AssetDTO> updateAsset(@PathVariable Long id, @RequestBody AssetDTO dto) {
+        return assetService.findById(id)
+                .map(existing -> {
+                    existing.setName(dto.getAssetName());
+                    existing.setBrand(dto.getBrand());
+                    existing.setType(AssetType.valueOf(dto.getType().toUpperCase()));
+                    existing.setModel(dto.getModel());
+                    existing.setClient((userService.findClientByEmail(dto.getClientEmail()).get()));
+
+                    Asset updated = assetService.save(existing);
+                    return ResponseEntity.ok(assetMapper.toDto(updated));
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // DELETE /api/assets/{id}
+
+    // DELETE /app/api/assets/{id}
     @DeleteMapping("/{id}")
-    public void deleteAsset(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteAsset(@PathVariable Long id) {
+        if (assetService.findById(id).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
         assetService.delete(id);
+        return ResponseEntity.noContent().build();
     }
+
 }
