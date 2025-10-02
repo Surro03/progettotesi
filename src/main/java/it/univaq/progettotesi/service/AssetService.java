@@ -50,6 +50,16 @@ public class AssetService {
         return saved;
     }
 
+    @Transactional
+    public Asset create(Admin user, Building building, String name, String brand,
+                        AssetType type, String model, Client client) {
+
+        Asset a = new Asset(user, building, name, brand, type, model, client);
+        Asset saved = AssetRepository.saveAndFlush(a);
+        buildingConfigService.saveBuildingConfig(building.getId());
+        return saved;
+    }
+
     public Asset save(Asset asset) {
         buildingConfigService.saveBuildingConfig(asset.getBuilding().getId());
         return AssetRepository.save(asset);

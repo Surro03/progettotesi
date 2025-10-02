@@ -55,7 +55,6 @@ public class AssetRestController {
                 dto.getBrand(),
                 AssetType.valueOf(dto.getType().toUpperCase()),
                 dto.getModel(),
-                CommProtocol.MODBUS,
                 client.get()
         );
 
