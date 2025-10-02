@@ -149,13 +149,6 @@ public class BuildingController {
         return "buildings/details"; */
     }
 
-
-    @GetMapping("/{buildingId}/config")
-    public String show(@PathVariable long buildingId, Model model) {
-        model.addAttribute("json", buildingConfigService.getJson(buildingId).toPrettyString());
-        return "buildings/config"; // tua view
-    }
-
     @GetMapping("/{buildingId}/edit")
     public String editBuilding(@PathVariable Long buildingId, Model model, @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
         var u = userService.findAdminByEmail(user.getUsername()).orElseThrow();
