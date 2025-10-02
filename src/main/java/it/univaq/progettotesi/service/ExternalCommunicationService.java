@@ -17,109 +17,49 @@ import reactor.core.publisher.Mono;
 public class ExternalCommunicationService {
 
     private final WebClient webClient;
-    private final ObjectMapper objectMapper;
+    private final ExternalTokenManager tokenManager;
     private static final Logger log = LoggerFactory.getLogger(ExternalCommunicationService.class);
 
-    // Inietta i valori da application.properties
-    @Value("${api.login.username}")
-    private String apiUsername;
-
-    @Value("${api.login.password}")
-    private String apiPassword;
-
-    // Iniezione del WebClient
-    public ExternalCommunicationService(WebClient webClient, ObjectMapper objectMapper) {
+    public ExternalCommunicationService(WebClient webClient, ExternalTokenManager tokenManager) {
         this.webClient = webClient;
-        this.objectMapper = objectMapper;
-    }
-
-    public void apiRegistration(String email, String password) {
-        webClient.post()
-                .uri("/auth/register")
-                .body(Mono.just(email), String.class);
-    }
-
-    //Esegue il login all'API esterna e restituisce il token di autenticazione.
-    private String getToken() {
-        System.out.println("Richiesta di un nuovo token di autenticazione...");
-
-
-        LoginRequestDTO loginRequest = new LoginRequestDTO(apiUsername, apiPassword);
-
-        LoginResponseDTO response = webClient.post()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/auth/login")
-                        .queryParam("username", loginRequest.username())
-                        .queryParam("password", loginRequest.password())
-                        .build())
-                .retrieve()
-                .bodyToMono(LoginResponseDTO.class) // Mappa la risposta in un oggetto LoginResponseDTO
-                .block(); // Attende la risposta
-
-        if (response == null || response.token() == null) {
-            throw new RuntimeException("Impossibile ottenere il token di autenticazione.");
-        }
-
-        System.out.println("Token ottenuto con successo.");
-        return response.token();
+        this.tokenManager = tokenManager;
     }
 
     public void saveUserDTO(UserDTO user) {
-        System.out.println("Invio dati all'altro sistema...");
-        try {
-            // --- ECCO IL LOG ---
-            // Converte l'oggetto DTO in una stringa JSON formattata (pretty print)
-            
-            String jsonBody = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(user);
-            log.info("Invio del seguente JSON all'API esterna:\n{}", jsonBody);
-            // ------------------
-
-        } catch (Exception e) {
-            log.error("Errore durante la conversione del DTO in JSON", e);
-        }
-
-        String authToken = getToken();
-
-        // Esegui la chiamata POST
-        webClient.post()
-                .uri("/api/userdata/save") // <-- L'endpoint specifico dell'altro server
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
-                .bodyValue(user)
-                .retrieve() // Esegui la richiesta
-                .bodyToMono(String.class) // Mi aspetto una risposta di tipo String
-                .block(); // .block() attende la fine della chiamata
-
-        System.out.println("Dati inviati con successo!");
+        executeWithBearerRetry(() ->
+                webClient.post()
+                        .uri("/api/userdata/save")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenManager.getToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(user)
+                        .retrieve()
+                        .toBodilessEntity()
+                        .block()
+        );
     }
 
     public void updateUserDTO(UserDTO user, String oldUsername) {
-        System.out.println("Invio dati all'altro sistema...");
-        try {
-            // --- ECCO IL LOG ---
-            // Converte l'oggetto DTO in una stringa JSON formattata (pretty print)
-
-            String jsonBody = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(user);
-            log.info("Invio del seguente JSON all'API esterna:\n{}", jsonBody);
-            // ------------------
-
-        } catch (Exception e) {
-            log.error("Errore durante la conversione del DTO in JSON", e);
-        }
-
-        String authToken = getToken();
-
-        // Esegui la chiamata PUT
-        webClient.put()
-                .uri("/api/userdata/update/{username}", oldUsername) // <-- L'endpoint specifico dell'altro server
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + authToken)
-                .bodyValue(user)
-                .retrieve() // Esegui la richiesta
-                .bodyToMono(String.class) // Aspettati una risposta di tipo String
-                .block(); // .block() attende la fine della chiamata
-
-        System.out.println("Dati inviati con successo!");
+        executeWithBearerRetry(() ->
+                webClient.put()
+                        .uri("/api/userdata/update/{username}", oldUsername)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenManager.getToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(user)
+                        .retrieve()
+                        .toBodilessEntity()
+                        .block()
+        );
     }
 
+    // Esegue la chiamata; se prende 401, invalida token, rifà login e ritenta una volta.
+    private void executeWithBearerRetry(Runnable call) {
+        try {
+            call.run();
+        } catch (org.springframework.web.reactive.function.client.WebClientResponseException.Unauthorized e) {
+            log.info("401 ricevuto: invalido token e ritento una volta");
+            tokenManager.invalidate();
+            // retry una sola volta
+            call.run();
+        }
+    }
 }
