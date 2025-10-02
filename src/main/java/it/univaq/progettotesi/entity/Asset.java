@@ -77,6 +77,16 @@ public class Asset {
         this.client = client;
     }
 
+    public Asset(Admin admin, Building building, String name, String brand, AssetType type, String model, Client client) {
+        this.admin = admin;
+        this.building = building;
+        this.name = name;
+        this.brand = brand;
+        this.type = type;
+        this.model = model;
+        this.client = client;
+    }
+
     @JsonProperty("buildingId") // lo vedrai nel JSON come "buildingId"
     public Long getBuildingId() {
         return (building != null) ? building.getId() : null;
