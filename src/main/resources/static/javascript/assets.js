@@ -40,7 +40,6 @@ function renderAssetTable(data, buildingId) {
             <td>${a.type}</td>
             <td>${a.model}</td>
             <td>${a.commProtocol}</td>
-            <td>${a.endpoint}</td>
             <td>
                 <form action="/buildings/${buildingId}/assets/${a.id}/delete" method="post" style="display:inline" onsubmit="return confirm('Eliminare questo asset?');">
                     <input type="hidden" name="_csrf" value="${document.querySelector('meta[name="_csrf"]').content}">
@@ -61,7 +60,6 @@ function renderAssetTable(data, buildingId) {
                     <th>Tipo</th>
                     <th>Modello</th>
                     <th><button class="link" onclick="changeAssetSort(${buildingId}, 'commProtocol')">Protocollo ${getAssetSortArrow('commProtocol')}</button></th>
-                    <th>Endpoint</th>
                     <th>Azioni</th>
                 </tr>
             </thead>

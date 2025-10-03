@@ -25,10 +25,10 @@ function renderTable(data) {
         container.innerHTML = `
             <p>Nessun edificio trovato.</p>
         `;
-        return; // esce dalla funzione, niente tabella
+        return;
     }
 
-    // altrimenti crea la tabella normalmente
+
     const rows = data.content.map(b => `
         <tr>
             <td>${b.name}</td>
